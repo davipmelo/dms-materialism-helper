@@ -119,3 +119,4 @@ export interface PurchaseItem {
   metrics: CalculatedMetrics;
   review?: PurchaseReview;
 }
+

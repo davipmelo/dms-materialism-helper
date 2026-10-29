@@ -247,3 +247,4 @@ export function formatBRL(value: number): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
