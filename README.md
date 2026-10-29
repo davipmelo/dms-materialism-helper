@@ -1,7 +1,7 @@
 # 🛡️ DMS Materialism Helper
 
 > **Decisões de compra racionais, anti-impulso e cálculo de custo por uso.**  
-> Disponível online em: [davimelo.github.io/dms-materialism-helper](https://davimelo.github.io/dms-materialism-helper/)
+> Disponível online em: [davipmelo.github.io/dms-materialism-helper](https://davipmelo.github.io/dms-materialism-helper/)
 
 ---
 
@@ -58,7 +58,7 @@ Após comprar, você pode registrar o uso real semanas depois:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/davimelo/dms-materialism-helper.git
+git clone https://github.com/davipmelo/dms-materialism-helper.git
 cd dms-materialism-helper
 
 # Instale as dependências
