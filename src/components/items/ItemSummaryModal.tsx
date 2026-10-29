@@ -308,3 +308,4 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
     </div>
   );
 };
+
