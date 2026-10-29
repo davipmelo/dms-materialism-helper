@@ -17,7 +17,8 @@ import {
   Check, 
   DollarSign, 
   Link2,
-  FileText
+  FileText,
+  Wallet
 } from 'lucide-react';
 
 interface WizardFormProps {
@@ -106,6 +107,10 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (step < 4) {
+      handleNext();
+      return;
+    }
     if (!validateStep(step)) return;
     onSubmit(formData);
   };
@@ -122,7 +127,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
             {step === 1 && 'Produto & Motivo'}
             {step === 2 && 'Frequência & Vida Útil'}
             {step === 3 && 'Gatilho & Impulso'}
-            {step === 4 && 'Financeiro & Revenda'}
+            {step === 4 && 'Financeiro & Liquidez'}
           </span>
         </div>
         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
@@ -582,27 +587,72 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
         {/* ===================== PASSO 4: FINANCEIRO & LIQUIDEZ ===================== */}
         {step === 4 && (
-          <div className="space-y-5 animate-fade-in">
+          <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
-                Liquidez & Impacto no Bolso
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase flex items-center gap-2">
+                <Wallet className="h-6 w-6 text-[#ffbb00]" />
+                <span>Financeiro & Liquidez</span>
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400">
-                Como esse dinheiro sai da sua conta e quanto você reaveria se precisar.
+                Como esse dinheiro sai da sua conta e quanto você reaveria se precisar revender.
               </p>
             </div>
 
-            {/* Liquidez de Revenda */}
+            {/* 1. Origem do Dinheiro */}
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                Se você se arrepender em 6 meses, qual a facilidade de revender?
+                1. De onde virá esse dinheiro para pagar?
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => updateField('paidWithSavings', true)}
+                  className={`flex flex-col p-3.5 rounded-xl border text-left transition-all tap-effect ${
+                    formData.paidWithSavings
+                      ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white ring-1 ring-[#ffbb00]'
+                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-200">Reserva Planejada</span>
+                    {formData.paidWithSavings && <Check className="h-4 w-4 text-[#ffbb00]" />}
+                  </div>
+                  <span className="text-[11px] text-zinc-400 mt-1">
+                    Já guardei ou tenho sobra limpa sem aperto no orçamento
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateField('paidWithSavings', false)}
+                  className={`flex flex-col p-3.5 rounded-xl border text-left transition-all tap-effect ${
+                    !formData.paidWithSavings
+                      ? 'border-amber-500 bg-amber-500/15 text-white ring-1 ring-amber-500'
+                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-200">Salário / Parcelado</span>
+                    {!formData.paidWithSavings && <Check className="h-4 w-4 text-amber-400" />}
+                  </div>
+                  <span className="text-[11px] text-zinc-400 mt-1">
+                    Vai comprometer o orçamento do mês ou o limite do cartão
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Liquidez de Revenda */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                2. Se você se arrepender em 6 meses, qual a facilidade de revender? (Liquidez)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
-                  { value: 'none', label: 'Nenhuma (Passivo Puro)', sub: 'Perde 90-100% (roupa comum, comida, serviço)' },
-                  { value: 'low', label: 'Baixa', sub: 'Difícil achar comprador, perda de ~70%' },
-                  { value: 'medium', label: 'Média', sub: 'Mercado OK (vende por ~50% do valor)' },
-                  { value: 'high', label: 'Alta (Quase como dinheiro)', sub: 'Apple, lentes, pesos de academia (~70%+)' },
+                  { value: 'high', label: 'Alta Liquidez (~70%+)', sub: 'Fácil achar comprador rápido (Apple, lentes, pesos de academia)' },
+                  { value: 'medium', label: 'Média Liquidez (~50%)', sub: 'Mercado razoável, vende por cerca de metade do valor' },
+                  { value: 'low', label: 'Baixa Liquidez (~20-30%)', sub: 'Difícil achar comprador, grande perda de valor' },
+                  { value: 'none', label: 'Nenhuma (Passivo Puro)', sub: 'Perda total de 100% (roupa comum, comida, serviço)' },
                 ].map((item) => {
                   const isSelected = formData.liquidity === item.value;
                   return (
@@ -612,53 +662,18 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('liquidity', item.value as ResaleLiquidity)}
                       className={`flex flex-col text-left p-3 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white ring-1 ring-[#ffbb00]'
                           : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
-                      <span className="text-xs font-bold text-zinc-200">{item.label}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-zinc-200">{item.label}</span>
+                        {isSelected && <Check className="h-3.5 w-3.5 text-[#ffbb00]" />}
+                      </div>
                       <span className="text-[10px] text-zinc-400 mt-0.5">{item.sub}</span>
                     </button>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* De onde sai o dinheiro */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                De onde virá esse dinheiro?
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => updateField('paidWithSavings', true)}
-                  className={`flex flex-col p-3 rounded-xl border text-left transition-all tap-effect ${
-                    formData.paidWithSavings
-                      ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
-                  }`}
-                >
-                  <span className="text-xs font-bold text-zinc-200">Reserva Planejada</span>
-                  <span className="text-[10px] text-zinc-400 mt-0.5">
-                    Já guardei ou tenho sobra limpa sem aperto
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => updateField('paidWithSavings', false)}
-                  className={`flex flex-col p-3 rounded-xl border text-left transition-all tap-effect ${
-                    !formData.paidWithSavings
-                      ? 'border-amber-500 bg-amber-500/15 text-white'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
-                  }`}
-                >
-                  <span className="text-xs font-bold text-zinc-200">Salário / Parcelado</span>
-                  <span className="text-[10px] text-zinc-400 mt-0.5">
-                    Vai comprometer o mês ou o limite do cartão
-                  </span>
-                </button>
               </div>
             </div>
           </div>
