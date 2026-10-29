@@ -13,6 +13,7 @@ interface ItemListProps {
   items: PurchaseItem[];
   onUpdateStatus: (id: string, status: PurchaseStatus) => void;
   onOpenReview: (item: PurchaseItem) => void;
+  onViewSummary: (item: PurchaseItem) => void;
   onDeleteItem: (id: string) => void;
   onNavigateToWizard: () => void;
 }
@@ -21,6 +22,7 @@ export const ItemList: React.FC<ItemListProps> = ({
   items,
   onUpdateStatus,
   onOpenReview,
+  onViewSummary,
   onDeleteItem,
   onNavigateToWizard,
 }) => {
@@ -49,21 +51,21 @@ export const ItemList: React.FC<ItemListProps> = ({
       {/* Resumo Rápido no Topo */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {/* Card Economia */}
-        <div className="col-span-2 sm:col-span-1 rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
-            <PiggyBank className="h-4 w-4" />
+        <div className="col-span-2 sm:col-span-1 rounded-2xl border border-[#ffbb00]/25 bg-gradient-to-br from-[#ffbb00]/15 to-transparent p-4 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#ffbb00]">
+            <PiggyBank className="h-4 w-4 text-[#ffbb00]" />
             <span>Dinheiro Salvo</span>
           </div>
           <div className="mt-1.5 text-xl font-extrabold text-white">
             {formatBRL(totalSaved)}
           </div>
-          <div className="text-[10px] text-slate-400">
+          <div className="text-[10px] text-zinc-400">
             em compras evitadas por impulso
           </div>
         </div>
 
         {/* Card Quarentena */}
-        <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 p-4 backdrop-blur-sm">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 backdrop-blur-sm">
           <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
             <Clock className="h-4 w-4" />
             <span>Em Quarentena</span>
@@ -71,21 +73,21 @@ export const ItemList: React.FC<ItemListProps> = ({
           <div className="mt-1.5 text-xl font-extrabold text-white">
             {quarantineCount} {quarantineCount === 1 ? 'item' : 'itens'}
           </div>
-          <div className="text-[10px] text-slate-400">
+          <div className="text-[10px] text-zinc-400">
             aguardando o tempo esfriar
           </div>
         </div>
 
         {/* Card Comprados */}
-        <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-500/5 p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-400">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-xs font-semibold text-zinc-300">
             <span>🛒</span>
             <span>Comprados</span>
           </div>
           <div className="mt-1.5 text-xl font-extrabold text-white">
             {boughtCount} {boughtCount === 1 ? 'item' : 'itens'}
           </div>
-          <div className="text-[10px] text-slate-400">
+          <div className="text-[10px] text-zinc-400">
             adquiridos e em uso
           </div>
         </div>
@@ -95,13 +97,13 @@ export const ItemList: React.FC<ItemListProps> = ({
       <div className="space-y-3">
         {/* Barra de Busca */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nome do produto..."
-            className="w-full rounded-xl border border-slate-800 bg-slate-900/80 pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00]"
           />
         </div>
 
@@ -117,10 +119,10 @@ export const ItemList: React.FC<ItemListProps> = ({
             <button
               key={tab.id}
               onClick={() => setFilterStatus(tab.id)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 font-semibold transition-all tap-effect ${
+              className={`shrink-0 rounded-full px-3.5 py-1.5 font-bold transition-all tap-effect ${
                 filterStatus === tab.id
-                  ? 'bg-emerald-500 text-slate-950 font-bold'
-                  : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  ? 'bg-[#ffbb00] text-black font-extrabold shadow-md shadow-[#ffbb00]/10'
+                  : 'border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white'
               }`}
             >
               {tab.label}
@@ -138,26 +140,27 @@ export const ItemList: React.FC<ItemListProps> = ({
               item={item}
               onUpdateStatus={onUpdateStatus}
               onOpenReview={onOpenReview}
+              onViewSummary={onViewSummary}
               onDeleteItem={onDeleteItem}
             />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 p-8 text-center space-y-3">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-slate-400 text-2xl">
+        <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 p-8 text-center space-y-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-900 text-zinc-400 text-2xl border border-zinc-800">
             🔍
           </div>
           <div className="space-y-1">
             <h4 className="text-sm font-bold text-white">Nenhum item encontrado</h4>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-zinc-400">
               {searchTerm 
                 ? 'Tente mudar o termo da busca ou o filtro selecionado.' 
-                : 'Você ainda não avaliou nenhuma compra nessa categoria.'}
+                : 'Seu histórico está limpo. Que tal avaliar uma compra que você está pensando em fazer?'}
             </p>
           </div>
           <button
             onClick={onNavigateToWizard}
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all tap-effect"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#ffbb00] px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all shadow-lg shadow-[#ffbb00]/20 tap-effect"
           >
             <PlusCircle className="h-4 w-4" />
             <span>Fazer Nova Avaliação</span>

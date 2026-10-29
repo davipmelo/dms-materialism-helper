@@ -61,6 +61,7 @@ export interface UserProfile {
   workingHoursMonth: number; // Horas trabalhadas no mês (padrão 160h)
   hourlyWage: number;        // Calculado ou fixado (R$/hora)
   currency: string;          // 'BRL'
+  isConfigured?: boolean;    // Flag se o usuário já realizou a configuração inicial
 }
 
 export interface PurchaseEvaluationInput {

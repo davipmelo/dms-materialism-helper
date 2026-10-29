@@ -39,10 +39,11 @@ export const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = 
 };
 
 export const DEFAULT_USER_PROFILE: UserProfile = {
-  monthlyIncome: 5000,
+  monthlyIncome: 0,
   workingHoursMonth: 160,
-  hourlyWage: 5000 / 160, // R$ 31.25/h
+  hourlyWage: 0,
   currency: 'BRL',
+  isConfigured: false,
 };
 
 export function calculateMetrics(
@@ -56,8 +57,10 @@ export function calculateMetrics(
   const costPerUse = price / totalEstimatedUses;
 
   // Horas de trabalho
-  const hourlyWage = Math.max(1, profile.hourlyWage || profile.monthlyIncome / (profile.workingHoursMonth || 160));
-  const hoursOfWork = price / hourlyWage;
+  const hourlyWage = profile.hourlyWage > 0 
+    ? profile.hourlyWage 
+    : (profile.monthlyIncome > 0 ? profile.monthlyIncome / (profile.workingHoursMonth || 160) : 0);
+  const hoursOfWork = hourlyWage > 0 ? price / hourlyWage : 0;
 
   // Custo de oportunidade (10.5% a.a. por 2 anos composto => ~22.1% de ganho real)
   const opportunityGain = price * (Math.pow(1 + 0.105, 2) - 1);
@@ -174,17 +177,17 @@ export function calculateMetrics(
   if (score >= 80) {
     tier = 'excellent';
     tierLabel = 'Excelente Investimento';
-    tierColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+    tierColor = 'text-[#ffbb00] bg-[#ffbb00]/10 border-[#ffbb00]/40';
     verdict = 'Compra altamente recomendada. Alto custo-benefício e alinhada com suas reais necessidades.';
   } else if (score >= 60) {
     tier = 'acceptable';
     tierLabel = 'Compra Consciente';
-    tierColor = 'text-blue-400 bg-blue-500/10 border-blue-500/30';
+    tierColor = 'text-amber-300 bg-amber-500/10 border-amber-500/30';
     verdict = 'Compra viável e ponderada. Se o orçamento do mês estiver tranquilo, pode seguir sem peso na consciência.';
   } else if (score >= 40) {
     tier = 'doubtful';
     tierLabel = 'Zona de Quarentena';
-    tierColor = 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+    tierColor = 'text-orange-400 bg-orange-500/10 border-orange-500/30';
     verdict = 'Risco moderado de arrependimento. Dê 7 dias de quarentena antes de passar o cartão.';
   } else {
     tier = 'terrible';
@@ -206,10 +209,12 @@ export function calculateMetrics(
   }
 
   // Insight 2: Horas de trabalho
-  const hoursFormatted = hoursOfWork < 8 
-    ? `${hoursOfWork.toFixed(1)} horas de trabalho` 
-    : `${(hoursOfWork / 8).toFixed(1)} dias inteiros de expediente`;
-  insights.push(`Equivale a ${hoursFormatted} da sua jornada profissional.`);
+  if (hoursOfWork > 0) {
+    const hoursFormatted = hoursOfWork < 8 
+      ? `${hoursOfWork.toFixed(1)} horas de trabalho` 
+      : `${(hoursOfWork / 8).toFixed(1)} dias inteiros de expediente`;
+    insights.push(`Equivale a ${hoursFormatted} da sua jornada profissional.`);
+  }
 
   // Insight 3: Teste do dinheiro
   if (input.preferCashOverItem === 'cash') {

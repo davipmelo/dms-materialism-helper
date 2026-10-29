@@ -28,6 +28,8 @@ import { ItemList } from './components/items/ItemList';
 import { StatsDashboard } from './components/stats/StatsDashboard';
 import { ReviewModal } from './components/items/ReviewModal';
 import { SettingsModal } from './components/settings/SettingsModal';
+import { OnboardingModal } from './components/onboarding/OnboardingModal';
+import { ItemSummaryModal } from './components/items/ItemSummaryModal';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState<'wizard' | 'items' | 'stats'>('wizard');
@@ -39,6 +41,7 @@ export function App() {
   const [activeMetrics, setActiveMetrics] = useState<CalculatedMetrics | null>(null);
 
   // Modais
+  const [viewingSummaryItem, setViewingSummaryItem] = useState<PurchaseItem | null>(null);
   const [reviewingItem, setReviewingItem] = useState<PurchaseItem | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
@@ -80,16 +83,29 @@ export function App() {
   const handleUpdateStatus = (id: string, status: PurchaseStatus) => {
     const updated = updateItemStatus(id, status);
     setItems(updated);
+    if (viewingSummaryItem && viewingSummaryItem.id === id) {
+      setViewingSummaryItem({ ...viewingSummaryItem, status });
+    }
   };
 
   const handleSubmitReview = (itemId: string, review: PurchaseReview) => {
     const updated = submitItemReview(itemId, review);
     setItems(updated);
+    if (viewingSummaryItem && viewingSummaryItem.id === itemId) {
+      setViewingSummaryItem({
+        ...viewingSummaryItem,
+        status: 'reviewed',
+        review,
+      });
+    }
   };
 
   const handleDeleteItem = (id: string) => {
     const updated = deleteItem(id);
     setItems(updated);
+    if (viewingSummaryItem && viewingSummaryItem.id === id) {
+      setViewingSummaryItem(null);
+    }
   };
 
   const handleSaveProfile = (newProfile: UserProfile) => {
@@ -112,17 +128,15 @@ export function App() {
   };
 
   const quarantineCount = items.filter((i) => i.status === 'quarantine').length;
+  const isNeedsOnboarding = !profile.isConfigured || profile.monthlyIncome <= 0;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-black text-zinc-100 flex flex-col font-sans selection:bg-[#ffbb00]/25 selection:text-[#ffbb00]">
       {/* Top Navbar */}
       <Navbar
         currentTab={currentTab}
         onSelectTab={(tab) => {
           setCurrentTab(tab);
-          if (tab === 'wizard' && activeMetrics) {
-            // Permite ver o resultado anterior se estiver ativo
-          }
         }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         itemsCount={{
@@ -158,6 +172,7 @@ export function App() {
             items={items}
             onUpdateStatus={handleUpdateStatus}
             onOpenReview={(item) => setReviewingItem(item)}
+            onViewSummary={(item) => setViewingSummaryItem(item)}
             onDeleteItem={handleDeleteItem}
             onNavigateToWizard={() => {
               setActiveInput(null);
@@ -179,6 +194,15 @@ export function App() {
         )}
       </main>
 
+      {/* Item Full Summary Modal (Re-abrir análise a partir do histórico) */}
+      <ItemSummaryModal
+        item={viewingSummaryItem}
+        isOpen={!!viewingSummaryItem}
+        onClose={() => setViewingSummaryItem(null)}
+        onUpdateStatus={handleUpdateStatus}
+        onOpenReview={(item) => setReviewingItem(item)}
+      />
+
       {/* Review Modal */}
       {reviewingItem && (
         <ReviewModal
@@ -198,6 +222,12 @@ export function App() {
         onExportBackup={exportBackupJSON}
         onImportBackup={handleImportBackup}
         onClearAll={handleClearAll}
+      />
+
+      {/* Onboarding Modal - Exibido na primeira vez até configurar salário e horas */}
+      <OnboardingModal
+        isOpen={isNeedsOnboarding}
+        onComplete={handleSaveProfile}
       />
 
       {/* Mobile Bottom Navigation */}

@@ -91,18 +91,18 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
     <div className="w-full max-w-xl mx-auto pb-16">
       {/* Indicador de Passos Mobile-Friendly */}
       <div className="mb-6">
-        <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2 px-1">
+        <div className="flex items-center justify-between text-xs font-bold text-zinc-400 mb-2 px-1">
           <span>Passo {step} de 4</span>
-          <span className="text-emerald-400">
+          <span className="text-[#ffbb00]">
             {step === 1 && 'O que e Quanto'}
             {step === 2 && 'Utilidade & Vida Útil'}
             {step === 3 && 'Gatilho & Impulso'}
             {step === 4 && 'Financeiro & Revenda'}
           </span>
         </div>
-        <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300 ease-out"
+            className="h-full bg-[#ffbb00] transition-all duration-300 ease-out"
             style={{ width: `${(step / 4) * 100}%` }}
           />
         </div>
@@ -113,17 +113,17 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         {step === 1 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                O que você está pensando em comprar?
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
+                O que você quer comprar?
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-zinc-400">
                 Seja sincero com os valores para calcularmos o custo por uso exato.
               </p>
             </div>
 
             {/* Nome do Item */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Nome do Item / Produto *
               </label>
               <input
@@ -131,18 +131,18 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 value={formData.name}
                 onChange={(e) => updateField('name', e.target.value)}
                 placeholder="Ex: Fone Bluetooth, Jaqueta, Cafeteira..."
-                className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
                 autoFocus
               />
             </div>
 
             {/* Preço (R$) */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Valor Total (R$) *
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-3 text-sm font-semibold text-slate-400">
+                <span className="absolute left-4 top-3 text-sm font-semibold text-zinc-400">
                   R$
                 </span>
                 <input
@@ -152,14 +152,14 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   value={formData.price || ''}
                   onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
                   placeholder="0,00"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-900/80 pl-11 pr-4 py-3 text-base font-semibold text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-11 pr-4 py-3 text-base font-bold text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
                 />
               </div>
             </div>
 
             {/* Categoria */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Categoria
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -172,8 +172,8 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('category', key)}
                       className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white font-semibold'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white font-bold'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       <span className="text-lg">{cat.icon}</span>
@@ -186,7 +186,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
             {/* Link ou notas rápidas */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Link do produto ou motivo (opcional)
               </label>
               <input
@@ -194,7 +194,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 value={formData.notes || ''}
                 onChange={(e) => updateField('notes', e.target.value)}
                 placeholder="Ex: Vi na loja X, link do anúncio ou detalhe..."
-                className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00]"
               />
             </div>
           </div>
@@ -204,17 +204,17 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         {step === 2 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
                 Frequência e Vida Útil
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-zinc-400">
                 O custo por uso é a métrica definitiva para desmascarar compras fúteis.
               </p>
             </div>
 
             {/* Frequência de uso */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Com que frequência você REALMENTE vai usar?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -236,15 +236,15 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('frequency', item.value as UsageFrequency)}
                       className={`flex flex-col text-left p-3 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-200">{item.label}</span>
-                        {isSelected && <Check className="h-3.5 w-3.5 text-emerald-400" />}
+                        <span className="text-xs font-bold text-zinc-200">{item.label}</span>
+                        {isSelected && <Check className="h-3.5 w-3.5 text-[#ffbb00]" />}
                       </div>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{item.sub}</span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">{item.sub}</span>
                     </button>
                   );
                 })}
@@ -254,10 +254,10 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
             {/* Expectativa de Vida Útil */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                   Quanto tempo esse item durará com você?
                 </label>
-                <span className="text-xs font-bold text-emerald-400">
+                <span className="text-xs font-black text-[#ffbb00]">
                   {formData.lifespanMonths < 12 
                     ? `${formData.lifespanMonths} meses` 
                     : `${(formData.lifespanMonths / 12).toFixed(1)} anos`}
@@ -277,8 +277,8 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                     onClick={() => updateField('lifespanMonths', option.months)}
                     className={`py-2 px-1 rounded-lg border text-center text-xs font-medium transition-all tap-effect ${
                       formData.lifespanMonths === option.months
-                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold'
-                        : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-slate-200'
+                        ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-[#ffbb00] font-bold'
+                        : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
                     }`}
                   >
                     {option.label}
@@ -289,7 +289,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
             {/* Durabilidade / Construção */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Qualidade de Construção & Desgaste
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -297,7 +297,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   { value: 'fragile', label: 'Frágil / Perecível', sub: 'Desgaste rápido ou moda passageira' },
                   { value: 'standard', label: 'Padrão de Mercado', sub: 'Durabilidade esperada na média' },
                   { value: 'durable', label: 'Robusto / Bem Feito', sub: 'Materiais de alta resistência' },
-                  { value: 'buy_it_for_life', label: 'Buy It For Life (BIFL)', sub: 'Feito para durar uma vida inteira' },
+                  { value: 'buy_it_for_life', label: 'Buy It For Life (BIFL)', sub: 'Feito para durar muitos anos' },
                 ].map((tier) => {
                   const isSelected = formData.durability === tier.value;
                   return (
@@ -307,15 +307,15 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('durability', tier.value as DurabilityTier)}
                       className={`flex flex-col text-left p-2.5 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-200">{tier.label}</span>
-                        {isSelected && <Check className="h-3 w-3 text-emerald-400" />}
+                        <span className="text-xs font-bold text-zinc-200">{tier.label}</span>
+                        {isSelected && <Check className="h-3 w-3 text-[#ffbb00]" />}
                       </div>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{tier.sub}</span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">{tier.sub}</span>
                     </button>
                   );
                 })}
@@ -328,17 +328,17 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         {step === 3 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
                 Teste de Impulso & Fricção Mental
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-zinc-400">
                 O cérebro adora criar justificativas lógicas para desejos puramente emocionais.
               </p>
             </div>
 
             {/* Tempo pensando */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Há quanto tempo você quer comprar isso?
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -356,8 +356,8 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('desireAge', item.value as DesireAge)}
                       className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white font-bold'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white font-bold'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
                       <span>{item.icon}</span>
@@ -370,7 +370,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
             {/* De onde veio o desejo */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Qual foi o gatilho inicial?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -390,15 +390,15 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('trigger', item.value as PurchaseTrigger)}
                       className={`flex flex-col text-left p-2.5 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-200">{item.label}</span>
-                        {isSelected && <Check className="h-3 w-3 text-emerald-400" />}
+                        <span className="text-xs font-bold text-zinc-200">{item.label}</span>
+                        {isSelected && <Check className="h-3 w-3 text-[#ffbb00]" />}
                       </div>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{item.sub}</span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">{item.sub}</span>
                     </button>
                   );
                 })}
@@ -406,12 +406,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
             </div>
 
             {/* O Teste do Dinheiro na Mão */}
-            <div className="space-y-2 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3.5">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300 uppercase tracking-wider">
+            <div className="space-y-2 rounded-2xl border border-[#ffbb00]/30 bg-[#ffbb00]/5 p-3.5">
+              <div className="flex items-center gap-1.5 text-xs font-black text-[#ffbb00] uppercase tracking-wider">
                 <DollarSign className="h-4 w-4" />
                 O Teste do Dinheiro Vivo
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-zinc-300 leading-relaxed">
                 Se uma pessoa te desse agora o valor de R$ {formData.price || '...'} em notas de dinheiro vivo na sua mão: você preferiria ficar com o dinheiro ou comprar o produto?
               </p>
               <div className="grid grid-cols-3 gap-2 pt-1">
@@ -428,12 +428,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('preferCashOverItem', opt.value as any)}
                       className={`p-2 rounded-xl border text-center transition-all tap-effect ${
                         isSelected
-                          ? 'border-amber-400 bg-amber-400/20 text-white font-bold'
-                          : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-slate-200'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-white font-bold'
+                          : 'border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:text-zinc-200'
                       }`}
                     >
                       <div className="text-xs font-semibold">{opt.label}</div>
-                      <div className="text-[10px] text-slate-400">{opt.desc}</div>
+                      <div className="text-[10px] text-zinc-400">{opt.desc}</div>
                     </button>
                   );
                 })}
@@ -442,7 +442,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
             {/* Alternativas Existentes */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Você já tem algo similar ou consegue resolver sem gastar?
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -460,12 +460,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('alternative', alt.value as AlternativeAvailability)}
                       className={`flex flex-col text-left p-2.5 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
-                      <span className="text-xs font-bold text-slate-200">{alt.label}</span>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{alt.sub}</span>
+                      <span className="text-xs font-bold text-zinc-200">{alt.label}</span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">{alt.sub}</span>
                     </button>
                   );
                 })}
@@ -478,22 +478,22 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         {step === 4 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
                 Liquidez & Impacto no Bolso
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-zinc-400">
                 Como esse dinheiro sai da sua conta e quanto você reaveria se precisar.
               </p>
             </div>
 
             {/* Liquidez de Revenda */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 Se você se arrepender em 6 meses, qual a facilidade de revender?
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: 'none', label: 'Nenhuma (Passivo Puro)', sub: 'Perde 90-100% (comida, roupa comum, serviço)' },
+                  { value: 'none', label: 'Nenhuma (Passivo Puro)', sub: 'Perde 90-100% (roupa comum, comida, serviço)' },
                   { value: 'low', label: 'Baixa', sub: 'Difícil achar comprador, perda de ~70%' },
                   { value: 'medium', label: 'Média', sub: 'Mercado OK (vende por ~50% do valor)' },
                   { value: 'high', label: 'Alta (Quase como dinheiro)', sub: 'Apple, lentes, pesos de academia (~70%+)' },
@@ -506,12 +506,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                       onClick={() => updateField('liquidity', item.value as ResaleLiquidity)}
                       className={`flex flex-col text-left p-3 rounded-xl border transition-all tap-effect ${
                         isSelected
-                          ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                          : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
-                      <span className="text-xs font-bold text-slate-200">{item.label}</span>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{item.sub}</span>
+                      <span className="text-xs font-bold text-zinc-200">{item.label}</span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">{item.sub}</span>
                     </button>
                   );
                 })}
@@ -520,7 +520,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
             {/* De onde sai o dinheiro */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                 De onde virá esse dinheiro?
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -529,12 +529,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   onClick={() => updateField('paidWithSavings', true)}
                   className={`flex flex-col p-3 rounded-xl border text-left transition-all tap-effect ${
                     formData.paidWithSavings
-                      ? 'border-emerald-500 bg-emerald-500/15 text-white'
-                      : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                      ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white'
+                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                   }`}
                 >
-                  <span className="text-xs font-bold text-slate-200">Reserva Planejada</span>
-                  <span className="text-[10px] text-slate-400 mt-0.5">
+                  <span className="text-xs font-bold text-zinc-200">Reserva Planejada</span>
+                  <span className="text-[10px] text-zinc-400 mt-0.5">
                     Já guardei ou tenho sobra limpa sem aperto
                   </span>
                 </button>
@@ -545,11 +545,11 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   className={`flex flex-col p-3 rounded-xl border text-left transition-all tap-effect ${
                     !formData.paidWithSavings
                       ? 'border-amber-500 bg-amber-500/15 text-white'
-                      : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                   }`}
                 >
-                  <span className="text-xs font-bold text-slate-200">Salário / Parcelado</span>
-                  <span className="text-[10px] text-slate-400 mt-0.5">
+                  <span className="text-xs font-bold text-zinc-200">Salário / Parcelado</span>
+                  <span className="text-[10px] text-zinc-400 mt-0.5">
                     Vai comprometer o mês ou o limite do cartão
                   </span>
                 </button>
@@ -565,13 +565,13 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
           </div>
         )}
 
-        {/* Botões de Ação de Navegação (Fixos ou confortáveis) */}
+        {/* Botões de Ação de Navegação */}
         <div className="flex items-center gap-3 pt-2">
           {step > 1 && (
             <button
               type="button"
               onClick={handleBack}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-all tap-effect"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-bold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all tap-effect"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Voltar</span>
@@ -582,7 +582,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
             <button
               type="button"
               onClick={handleNext}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 tap-effect"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#ffbb00] py-3.5 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all shadow-lg shadow-[#ffbb00]/20 tap-effect"
             >
               <span>Continuar</span>
               <ArrowRight className="h-4 w-4" />
@@ -590,7 +590,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
           ) : (
             <button
               type="submit"
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 py-3.5 text-xs font-extrabold text-slate-950 hover:brightness-110 transition-all shadow-lg shadow-emerald-500/25 tap-effect"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#ffbb00] py-3.5 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all shadow-lg shadow-[#ffbb00]/25 tap-effect"
             >
               <Sparkles className="h-4 w-4" />
               <span>Calcular Veredito & Insights</span>

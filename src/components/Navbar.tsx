@@ -18,34 +18,31 @@ export const Navbar: React.FC<NavbarProps> = ({
   itemsCount,
 }) => {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-black/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         {/* Brand */}
         <div 
           onClick={() => onSelectTab('wizard')}
           className="flex cursor-pointer items-center gap-2.5 transition-opacity hover:opacity-90"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ffbb00] text-black shadow-lg shadow-[#ffbb00]/20 font-black">
             <ShieldCheck className="h-5 w-5 stroke-[2.5]" />
           </div>
           <div>
-            <span className="text-base font-bold tracking-tight text-white sm:text-lg">
-              Materialism<span className="text-emerald-400">Helper</span>
-            </span>
-            <span className="hidden text-xs text-slate-400 sm:inline sm:ml-2">
-              • Anti-Impulso
+            <span className="text-sm sm:text-base font-black tracking-tight text-white uppercase">
+              DM`S <span className="text-[#ffbb00]">MATERIALISM HELPER</span>
             </span>
           </div>
         </div>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 rounded-full border border-slate-800 bg-slate-900/60 p-1">
+        <nav className="hidden md:flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900/80 p-1">
           <button
             onClick={() => onSelectTab('wizard')}
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
               currentTab === 'wizard'
-                ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-[#ffbb00] text-black shadow-sm font-extrabold'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
             }`}
           >
             <PlusCircle className="h-4 w-4" />
@@ -54,10 +51,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => onSelectTab('items')}
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
               currentTab === 'items'
-                ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-[#ffbb00] text-black shadow-sm font-extrabold'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
             }`}
           >
             <ListChecks className="h-4 w-4" />
@@ -71,10 +68,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => onSelectTab('stats')}
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
               currentTab === 'stats'
-                ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-[#ffbb00] text-black shadow-sm font-extrabold'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
             }`}
           >
             <BarChart3 className="h-4 w-4" />
@@ -86,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenSettings}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800 hover:text-white tap-effect"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-300 transition-colors hover:border-[#ffbb00]/50 hover:bg-zinc-800 hover:text-[#ffbb00] tap-effect"
             title="Configurações e Backup"
             aria-label="Configurações"
           >
@@ -97,4 +94,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

@@ -71,22 +71,22 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
           <div>
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Scale className="h-4 w-4 text-emerald-400" />
-              Review Pós-Compra: {item.input.name}
+            <h3 className="text-base font-black text-white uppercase flex items-center gap-2">
+              <Scale className="h-4 w-4 text-[#ffbb00]" />
+              Review: {item.input.name}
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-zinc-400">
               Pago: {formatBRL(item.input.price)} • Expectativa vs Realidade
             </span>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
@@ -94,26 +94,26 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-5">
           {/* Comparativo de Custo por Uso */}
-          <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+          <div className="grid grid-cols-2 gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-3">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500">
+              <span className="text-[10px] uppercase font-bold text-zinc-500">
                 Estimado no Início
               </span>
-              <div className="text-sm font-bold text-slate-300">
+              <div className="text-sm font-bold text-zinc-300">
                 {formatBRL(item.metrics.costPerUse)} / uso
               </div>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-zinc-400">
                 {item.metrics.totalEstimatedUses} utilizações
               </span>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-emerald-400">
+              <span className="text-[10px] uppercase font-black text-[#ffbb00]">
                 Custo Real Calculado
               </span>
-              <div className="text-sm font-bold text-emerald-300">
+              <div className="text-sm font-black text-[#ffbb00]">
                 {formatBRL(actualCostPerUse)} / uso
               </div>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-zinc-400">
                 com base no uso real
               </span>
             </div>
@@ -121,13 +121,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Frequência Real */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Com que frequência você REALMENTE usou?
             </label>
             <select
               value={actualFrequency}
               onChange={(e) => setActualFrequency(e.target.value as UsageFrequency)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-xs text-white focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-white focus:border-[#ffbb00] focus:outline-none"
             >
               {Object.entries(FREQUENCY_LABELS).map(([k, label]) => (
                 <option key={k} value={k}>
@@ -139,28 +139,28 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Ainda está usando? */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Você ainda continua usando esse item atualmente?
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setStillUsing(true)}
-                className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all tap-effect ${
+                className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-effect ${
                   stillUsing
-                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-                    : 'border-slate-800 bg-slate-950 text-slate-400'
+                    ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-[#ffbb00]'
+                    : 'border-zinc-800 bg-zinc-900 text-zinc-400'
                 }`}
               >
-                Sim, ativo no meu dia a dia
+                Sim, ativo no dia a dia
               </button>
               <button
                 type="button"
                 onClick={() => setStillUsing(false)}
-                className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all tap-effect ${
+                className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-effect ${
                   !stillUsing
                     ? 'border-rose-500 bg-rose-500/20 text-rose-300'
-                    : 'border-slate-800 bg-slate-950 text-slate-400'
+                    : 'border-zinc-800 bg-zinc-900 text-zinc-400'
                 }`}
               >
                 Não, está parado/abandonado
@@ -170,7 +170,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Valeu a pena? */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               No fim das contas, valeu a pena essa compra?
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -179,8 +179,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 onClick={() => setWasWorthIt(true)}
                 className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all tap-effect ${
                   wasWorthIt
-                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-                    : 'border-slate-800 bg-slate-950 text-slate-400'
+                    ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-[#ffbb00]'
+                    : 'border-zinc-800 bg-zinc-900 text-zinc-400'
                 }`}
               >
                 <ThumbsUp className="h-4 w-4" />
@@ -192,7 +192,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all tap-effect ${
                   !wasWorthIt
                     ? 'border-rose-500 bg-rose-500/20 text-rose-300'
-                    : 'border-slate-800 bg-slate-950 text-slate-400'
+                    : 'border-zinc-800 bg-zinc-900 text-zinc-400'
                 }`}
               >
                 <ThumbsDown className="h-4 w-4" />
@@ -203,7 +203,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Nota de Satisfação (1 a 5) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Nota de satisfação com o produto (1 a 5)
             </label>
             <div className="flex items-center gap-2">
@@ -217,8 +217,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                   <Star
                     className={`h-6 w-6 transition-colors ${
                       star <= satisfactionRating
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-slate-700'
+                        ? 'fill-[#ffbb00] text-[#ffbb00]'
+                        : 'text-zinc-700'
                     }`}
                   />
                 </button>
@@ -228,7 +228,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Reflexão sincera */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               O que você aprendeu com essa compra? (Opcional)
             </label>
             <textarea
@@ -236,14 +236,14 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
               placeholder="Ex: Pensei que usaria nos finais de semana, mas percebi que não tenho tempo..."
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none"
             />
           </div>
 
           {/* Botão de Salvar */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all tap-effect flex items-center justify-center gap-2"
+            className="w-full rounded-xl bg-[#ffbb00] py-3 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all tap-effect flex items-center justify-center gap-2 shadow-lg shadow-[#ffbb00]/20"
           >
             <Sparkles className="h-4 w-4" />
             <span>Salvar Avaliação Pós-Compra</span>
@@ -253,4 +253,3 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     </div>
   );
 };
-

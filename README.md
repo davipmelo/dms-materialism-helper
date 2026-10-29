@@ -1,4 +1,4 @@
-# 🛡️ DMS Materialism Helper
+# 🛡️ DM'S MATERIALISM HELPER
 
 > **Decisões de compra racionais, anti-impulso e cálculo de custo por uso.**  
 > Disponível online em: [davipmelo.github.io/dms-materialism-helper](https://davipmelo.github.io/dms-materialism-helper/)
