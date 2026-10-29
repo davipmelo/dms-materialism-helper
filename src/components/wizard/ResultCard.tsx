@@ -14,7 +14,10 @@ import {
   CheckCircle2, 
   Bookmark, 
   Ban, 
-  RotateCcw 
+  RotateCcw,
+  Search,
+  ExternalLink,
+  Link2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -62,19 +65,40 @@ export const ResultCard: React.FC<ResultCardProps> = ({
     return 'from-rose-500/20 to-transparent border-rose-500/30';
   };
 
+  // Links de busca de produto para o dossiê
+  const searchQuery = [input.name, input.model].filter(Boolean).join(' ');
+  const googleShoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(searchQuery)}`;
+  const mercadoLivreUrl = `https://lista.mercadolivre.com.br/${encodeURIComponent(searchQuery)}`;
+  const amazonUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(searchQuery)}`;
+
+  // Formatação de anos e meses
+  const years = Math.floor(input.lifespanMonths / 12);
+  const months = input.lifespanMonths % 12;
+  const lifespanFormatted = [
+    years > 0 ? `${years} ${years === 1 ? 'ano' : 'anos'}` : null,
+    months > 0 ? `${months} ${months === 1 ? 'mês' : 'meses'}` : null,
+  ].filter(Boolean).join(' e ') || '1 mês';
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-slide-up pb-12">
       {/* Card Principal de Veredito */}
       <div className={`relative overflow-hidden rounded-3xl border bg-gradient-to-b p-6 sm:p-8 backdrop-blur-xl ${getScoreBgGlow(metrics.score)}`}>
-        {/* Header do Item */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl sm:text-3xl">{categoryInfo.icon}</span>
+        {/* Header do Item: Produto e Modelo */}
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl sm:text-4xl">{categoryInfo.icon}</span>
             <div>
-              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight uppercase">
-                {input.name || 'Item sem nome'}
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#ffbb00]">
+                {categoryInfo.label}
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
+                {input.name || 'Produto sem nome'}
               </h2>
-              <span className="text-xs text-zinc-400">{categoryInfo.label}</span>
+              {input.model && (
+                <div className="inline-block mt-0.5 rounded-md bg-zinc-800/80 px-2 py-0.5 text-xs font-semibold text-zinc-300 border border-zinc-700/60">
+                  Modelo: <span className="text-white">{input.model}</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="text-right">
@@ -149,7 +173,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               {formatBRL(metrics.costPerUse)}
             </div>
             <div className="text-[10px] text-zinc-400">
-              ~{metrics.totalEstimatedUses} utilizações previstas
+              ~{metrics.totalEstimatedUses} utilizações em {lifespanFormatted}
             </div>
           </div>
 
@@ -184,6 +208,62 @@ export const ResultCard: React.FC<ResultCardProps> = ({
           </div>
         </div>
 
+        {/* Dossiê & Links de Pesquisa do Produto */}
+        <div className="mt-6 rounded-2xl border border-zinc-800 bg-black/50 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+              <Search className="h-3.5 w-3.5 text-[#ffbb00]" />
+              Dossiê do Produto & Links de Pesquisa
+            </div>
+            <span className="text-[10px] text-zinc-500">Consultar ofertas</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={googleShoppingUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-[#ffbb00] hover:text-[#ffbb00] transition-colors"
+            >
+              <span>Google Shopping</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+
+            <a
+              href={mercadoLivreUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-yellow-400 hover:text-yellow-400 transition-colors"
+            >
+              <span>Mercado Livre</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+
+            <a
+              href={amazonUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-amber-400 hover:text-amber-400 transition-colors"
+            >
+              <span>Amazon</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+
+            {input.link && (
+              <a
+                href={input.link}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-lg border border-[#ffbb00]/40 bg-[#ffbb00]/10 px-3 py-1.5 text-xs font-bold text-[#ffbb00] hover:bg-[#ffbb00]/20 transition-colors"
+              >
+                <Link2 className="h-3 w-3" />
+                <span>Link Direto Informado</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+          </div>
+        </div>
+
         {/* Lista de Insights Inteligentes */}
         <div className="mt-6 space-y-2 rounded-xl border border-white/5 bg-black/40 p-4">
           <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -200,7 +280,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         </div>
       </div>
 
-      {/* Ações Imediatas (O que fazer agora?) */}
+      {/* Ações Imediatas */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 px-1">
           O que você decide fazer com essa compra?

@@ -15,7 +15,10 @@ import {
   ArrowLeft, 
   Sparkles, 
   Check, 
-  DollarSign 
+  DollarSign, 
+  Search, 
+  ExternalLink, 
+  Link2 
 } from 'lucide-react';
 
 interface WizardFormProps {
@@ -24,12 +27,13 @@ interface WizardFormProps {
 
 const INITIAL_FORM: PurchaseEvaluationInput = {
   name: '',
+  model: '',
   category: 'tech',
   price: 0,
   notes: '',
   link: '',
   frequency: 'daily',
-  lifespanMonths: 24,
+  lifespanMonths: 24, // 2 anos
   durability: 'standard',
   liquidity: 'medium',
   paidWithSavings: true,
@@ -44,6 +48,10 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<PurchaseEvaluationInput>(INITIAL_FORM);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
+  // Estados locais para anos e meses
+  const [lifespanYears, setLifespanYears] = useState<number>(Math.floor(INITIAL_FORM.lifespanMonths / 12));
+  const [lifespanExtraMonths, setLifespanExtraMonths] = useState<number>(INITIAL_FORM.lifespanMonths % 12);
+
   const updateField = <K extends keyof PurchaseEvaluationInput>(
     field: K,
     value: PurchaseEvaluationInput[K]
@@ -52,10 +60,27 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
     setErrorMsg('');
   };
 
+  const handleLifespanChange = (years: number, months: number) => {
+    const y = Math.max(0, years || 0);
+    const m = Math.max(0, months || 0);
+    setLifespanYears(y);
+    setLifespanExtraMonths(m);
+    const totalMonths = Math.max(1, (y * 12) + m);
+    updateField('lifespanMonths', totalMonths);
+  };
+
+  const setLifespanPreset = (totalMonths: number) => {
+    const y = Math.floor(totalMonths / 12);
+    const m = totalMonths % 12;
+    setLifespanYears(y);
+    setLifespanExtraMonths(m);
+    updateField('lifespanMonths', totalMonths);
+  };
+
   const validateStep = (currentStep: number): boolean => {
     if (currentStep === 1) {
       if (!formData.name.trim()) {
-        setErrorMsg('Por favor, informe o nome ou descrição do item.');
+        setErrorMsg('Por favor, informe o Produto.');
         return false;
       }
       if (!formData.price || formData.price <= 0) {
@@ -87,6 +112,12 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
   const categories = Object.entries(CATEGORY_LABELS) as [PurchaseCategory, { label: string; icon: string }][];
 
+  // Query para busca de produto
+  const searchQuery = [formData.name, formData.model].filter(Boolean).join(' ');
+  const googleShoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(searchQuery)}`;
+  const mercadoLivreUrl = `https://lista.mercadolivre.com.br/${encodeURIComponent(searchQuery)}`;
+  const amazonUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(searchQuery)}`;
+
   return (
     <div className="w-full max-w-xl mx-auto pb-16">
       {/* Indicador de Passos Mobile-Friendly */}
@@ -94,8 +125,8 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         <div className="flex items-center justify-between text-xs font-bold text-zinc-400 mb-2 px-1">
           <span>Passo {step} de 4</span>
           <span className="text-[#ffbb00]">
-            {step === 1 && 'O que e Quanto'}
-            {step === 2 && 'Utilidade & Vida Útil'}
+            {step === 1 && 'Produto & Modelo'}
+            {step === 2 && 'Frequência & Vida Útil'}
             {step === 3 && 'Gatilho & Impulso'}
             {step === 4 && 'Financeiro & Revenda'}
           </span>
@@ -109,7 +140,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* ===================== PASSO 1: BÁSICO ===================== */}
+        {/* ===================== PASSO 1: PRODUTO & MODELO ===================== */}
         {step === 1 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
@@ -117,24 +148,86 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 O que você quer comprar?
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400">
-                Seja sincero com os valores para calcularmos o custo por uso exato.
+                Especifique o produto e o modelo exato para montar o dossiê da compra.
               </p>
             </div>
 
-            {/* Nome do Item */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                Nome do Item / Produto *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => updateField('name', e.target.value)}
-                placeholder="Ex: Fone Bluetooth, Jaqueta, Cafeteira..."
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
-                autoFocus
-              />
+            {/* Grid Produto e Modelo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Campo Produto */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                  Produto *
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => updateField('name', e.target.value)}
+                  placeholder="Ex: Fone de Ouvido, Jaqueta..."
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all font-semibold"
+                  autoFocus
+                />
+              </div>
+
+              {/* Campo Modelo */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                  Modelo
+                </label>
+                <input
+                  type="text"
+                  value={formData.model || ''}
+                  onChange={(e) => updateField('model', e.target.value)}
+                  placeholder="Ex: Sony WH-1000XM5, Preto..."
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
+                />
+              </div>
             </div>
+
+            {/* Card de Pesquisa Automática na Internet (Se tiver digitado o nome) */}
+            {searchQuery.trim().length > 2 && (
+              <div className="rounded-2xl border border-[#ffbb00]/25 bg-zinc-900/60 p-3.5 space-y-2.5 animate-fade-in">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#ffbb00] uppercase tracking-wider">
+                    <Search className="h-3.5 w-3.5" />
+                    Pesquisar "{searchQuery}"
+                  </div>
+                  <span className="text-[10px] text-zinc-400">Ver preços e specs</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <a
+                    href={googleShoppingUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-[#ffbb00] hover:text-[#ffbb00] transition-colors"
+                  >
+                    <span>Google Shopping</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+
+                  <a
+                    href={mercadoLivreUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-yellow-400 hover:text-yellow-400 transition-colors"
+                  >
+                    <span>Mercado Livre</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+
+                  <a
+                    href={amazonUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-amber-400 hover:text-amber-400 transition-colors"
+                  >
+                    <span>Amazon</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            )}
 
             {/* Preço (R$) */}
             <div className="space-y-1.5">
@@ -152,7 +245,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   value={formData.price || ''}
                   onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
                   placeholder="0,00"
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-11 pr-4 py-3 text-base font-bold text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-11 pr-4 py-3 text-base font-black text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] transition-all"
                 />
               </div>
             </div>
@@ -184,23 +277,24 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
               </div>
             </div>
 
-            {/* Link ou notas rápidas */}
+            {/* Link direto do produto */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                Link do produto ou motivo (opcional)
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                <Link2 className="h-3.5 w-3.5 text-zinc-400" />
+                Link direto do produto (opcional)
               </label>
               <input
-                type="text"
-                value={formData.notes || ''}
-                onChange={(e) => updateField('notes', e.target.value)}
-                placeholder="Ex: Vi na loja X, link do anúncio ou detalhe..."
+                type="url"
+                value={formData.link || ''}
+                onChange={(e) => updateField('link', e.target.value)}
+                placeholder="https://..."
                 className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00]"
               />
             </div>
           </div>
         )}
 
-        {/* ===================== PASSO 2: UTILIDADE & DURABILIDADE ===================== */}
+        {/* ===================== PASSO 2: UTILIDADE & VIDA ÚTIL ===================== */}
         {step === 2 && (
           <div className="space-y-5 animate-fade-in">
             <div className="space-y-1">
@@ -208,7 +302,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 Frequência e Vida Útil
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400">
-                O custo por uso é a métrica definitiva para desmascarar compras fúteis.
+                Configure com precisão quanto tempo e com que frequência esse item durará com você.
               </p>
             </div>
 
@@ -251,39 +345,84 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
               </div>
             </div>
 
-            {/* Expectativa de Vida Útil */}
-            <div className="space-y-2">
+            {/* Expectativa de Vida Útil Flexível: ANOS + MESES */}
+            <div className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                   Quanto tempo esse item durará com você?
                 </label>
                 <span className="text-xs font-black text-[#ffbb00]">
-                  {formData.lifespanMonths < 12 
-                    ? `${formData.lifespanMonths} meses` 
-                    : `${(formData.lifespanMonths / 12).toFixed(1)} anos`}
+                  {lifespanYears > 0 && `${lifespanYears} ${lifespanYears === 1 ? 'ano' : 'anos'}`}
+                  {lifespanYears > 0 && lifespanExtraMonths > 0 && ' e '}
+                  {lifespanExtraMonths > 0 && `${lifespanExtraMonths} ${lifespanExtraMonths === 1 ? 'mês' : 'meses'}`}
+                  {lifespanYears === 0 && lifespanExtraMonths === 0 && '1 mês'}
+                  <span className="text-zinc-500 font-normal ml-1">
+                    ({formData.lifespanMonths} meses)
+                  </span>
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-1.5">
-                {[
-                  { months: 6, label: '6 meses' },
-                  { months: 12, label: '1 ano' },
-                  { months: 24, label: '2 anos' },
-                  { months: 36, label: '3 anos' },
-                  { months: 60, label: '5+ anos' },
-                ].map((option) => (
-                  <button
-                    type="button"
-                    key={option.months}
-                    onClick={() => updateField('lifespanMonths', option.months)}
-                    className={`py-2 px-1 rounded-lg border text-center text-xs font-medium transition-all tap-effect ${
-                      formData.lifespanMonths === option.months
-                        ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-[#ffbb00] font-bold'
-                        : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+
+              {/* Campos combinados de Anos e Meses */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <span className="text-[11px] font-semibold text-zinc-400">Anos</span>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={lifespanYears}
+                      onChange={(e) => handleLifespanChange(parseInt(e.target.value) || 0, lifespanExtraMonths)}
+                      className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm font-bold text-white focus:border-[#ffbb00] focus:outline-none"
+                    />
+                    <span className="absolute right-3 top-2.5 text-xs text-zinc-500">anos</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[11px] font-semibold text-zinc-400">Meses adicionais</span>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="11"
+                      value={lifespanExtraMonths}
+                      onChange={(e) => handleLifespanChange(lifespanYears, parseInt(e.target.value) || 0)}
+                      className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm font-bold text-white focus:border-[#ffbb00] focus:outline-none"
+                    />
+                    <span className="absolute right-3 top-2.5 text-xs text-zinc-500">meses</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Presets Rápidos */}
+              <div className="pt-1">
+                <span className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-1.5">
+                  Atalhos rápidos:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { label: '6 meses', totalMonths: 6 },
+                    { label: '1 ano', totalMonths: 12 },
+                    { label: '1 ano e 6 meses', totalMonths: 18 },
+                    { label: '2 anos', totalMonths: 24 },
+                    { label: '3 anos', totalMonths: 36 },
+                    { label: '5 anos', totalMonths: 60 },
+                  ].map((preset) => (
+                    <button
+                      type="button"
+                      key={preset.totalMonths}
+                      onClick={() => setLifespanPreset(preset.totalMonths)}
+                      className={`px-2.5 py-1 rounded-lg border text-xs transition-all tap-effect ${
+                        formData.lifespanMonths === preset.totalMonths
+                          ? 'border-[#ffbb00] bg-[#ffbb00]/20 text-[#ffbb00] font-bold'
+                          : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

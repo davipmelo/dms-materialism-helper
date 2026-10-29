@@ -14,6 +14,7 @@ import {
   saveStoredProfile, 
   addItem, 
   updateItemStatus, 
+  updateItemIcon,
   submitItemReview, 
   deleteItem, 
   exportBackupJSON, 
@@ -30,6 +31,7 @@ import { ReviewModal } from './components/items/ReviewModal';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { ItemSummaryModal } from './components/items/ItemSummaryModal';
+import { EmojiPickerModal } from './components/items/EmojiPickerModal';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState<'wizard' | 'items' | 'stats'>('wizard');
@@ -42,6 +44,7 @@ export function App() {
 
   // Modais
   const [viewingSummaryItem, setViewingSummaryItem] = useState<PurchaseItem | null>(null);
+  const [changingEmojiItem, setChangingEmojiItem] = useState<PurchaseItem | null>(null);
   const [reviewingItem, setReviewingItem] = useState<PurchaseItem | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
@@ -71,6 +74,7 @@ export function App() {
       status,
       input: activeInput,
       metrics: activeMetrics,
+      customIcon: activeInput.customIcon,
     };
 
     const updated = addItem(newItem);
@@ -86,6 +90,16 @@ export function App() {
     if (viewingSummaryItem && viewingSummaryItem.id === id) {
       setViewingSummaryItem({ ...viewingSummaryItem, status });
     }
+  };
+
+  const handleSelectEmoji = (newEmoji: string) => {
+    if (!changingEmojiItem) return;
+    const updated = updateItemIcon(changingEmojiItem.id, newEmoji);
+    setItems(updated);
+    if (viewingSummaryItem && viewingSummaryItem.id === changingEmojiItem.id) {
+      setViewingSummaryItem({ ...viewingSummaryItem, customIcon: newEmoji });
+    }
+    setChangingEmojiItem(null);
   };
 
   const handleSubmitReview = (itemId: string, review: PurchaseReview) => {
@@ -173,6 +187,7 @@ export function App() {
             onUpdateStatus={handleUpdateStatus}
             onOpenReview={(item) => setReviewingItem(item)}
             onViewSummary={(item) => setViewingSummaryItem(item)}
+            onOpenEmojiPicker={(item) => setChangingEmojiItem(item)}
             onDeleteItem={handleDeleteItem}
             onNavigateToWizard={() => {
               setActiveInput(null);
@@ -194,14 +209,26 @@ export function App() {
         )}
       </main>
 
-      {/* Item Full Summary Modal (Re-abrir análise a partir do histórico) */}
+      {/* Item Full Summary Modal (Re-abrir dossiê/análise a partir do histórico) */}
       <ItemSummaryModal
         item={viewingSummaryItem}
         isOpen={!!viewingSummaryItem}
         onClose={() => setViewingSummaryItem(null)}
         onUpdateStatus={handleUpdateStatus}
         onOpenReview={(item) => setReviewingItem(item)}
+        onOpenEmojiPicker={(item) => setChangingEmojiItem(item)}
       />
+
+      {/* Emoji Picker Modal */}
+      {changingEmojiItem && (
+        <EmojiPickerModal
+          isOpen={!!changingEmojiItem}
+          currentEmoji={changingEmojiItem.customIcon || changingEmojiItem.input.customIcon || '📦'}
+          itemName={changingEmojiItem.input.name}
+          onClose={() => setChangingEmojiItem(null)}
+          onSelectEmoji={handleSelectEmoji}
+        />
+      )}
 
       {/* Review Modal */}
       {reviewingItem && (

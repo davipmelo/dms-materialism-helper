@@ -65,11 +65,13 @@ export interface UserProfile {
 }
 
 export interface PurchaseEvaluationInput {
-  name: string;
+  name: string; // Produto
+  model?: string; // Modelo específico
   category: PurchaseCategory;
   price: number;
   notes?: string;
   link?: string;
+  customIcon?: string;
 
   // Eixo Utilidade
   frequency: UsageFrequency;
@@ -118,6 +120,7 @@ export interface PurchaseItem {
   status: PurchaseStatus;
   input: PurchaseEvaluationInput;
   metrics: CalculatedMetrics;
+  customIcon?: string; // Emoji personalizado configurado no histórico
   review?: PurchaseReview;
 }
 

@@ -13,7 +13,10 @@ import {
   Ban, 
   CheckCircle2, 
   Star, 
-  ExternalLink 
+  ExternalLink,
+  Search,
+  Link2,
+  Smile
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -23,6 +26,7 @@ interface ItemSummaryModalProps {
   onClose: () => void;
   onUpdateStatus: (id: string, status: PurchaseStatus) => void;
   onOpenReview: (item: PurchaseItem) => void;
+  onOpenEmojiPicker?: (item: PurchaseItem) => void;
 }
 
 export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
@@ -31,11 +35,13 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
   onClose,
   onUpdateStatus,
   onOpenReview,
+  onOpenEmojiPicker,
 }) => {
   if (!isOpen || !item) return null;
 
   const { input, metrics } = item;
   const categoryInfo = CATEGORY_LABELS[input.category] || { label: input.category, icon: '📦' };
+  const displayIcon = item.customIcon || input.customIcon || categoryInfo.icon;
 
   const handlePassed = () => {
     confetti({
@@ -62,46 +68,68 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
     return 'from-rose-500/20 to-transparent border-rose-500/30';
   };
 
+  // Links de busca de produto para o dossiê
+  const searchQuery = [input.name, input.model].filter(Boolean).join(' ');
+  const googleShoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(searchQuery)}`;
+  const mercadoLivreUrl = `https://lista.mercadolivre.com.br/${encodeURIComponent(searchQuery)}`;
+  const amazonUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(searchQuery)}`;
+
+  // Formatação de anos e meses
+  const years = Math.floor(input.lifespanMonths / 12);
+  const months = input.lifespanMonths % 12;
+  const lifespanFormatted = [
+    years > 0 ? `${years} ${years === 1 ? 'ano' : 'anos'}` : null,
+    months > 0 ? `${months} ${months === 1 ? 'mês' : 'meses'}` : null,
+  ].filter(Boolean).join(' e ') || '1 mês';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-950 p-6 sm:p-8 shadow-2xl space-y-6">
         {/* Botão de Fechar no Topo */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 rounded-full border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors"
+          className="absolute top-5 right-5 rounded-full border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors z-10"
           title="Fechar"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Card Principal de Veredito */}
-        <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-b p-5 sm:p-7 backdrop-blur-xl ${getScoreBgGlow(metrics.score)}`}>
+        <div className={`relative overflow-hidden rounded-3xl border bg-gradient-to-b p-5 sm:p-7 backdrop-blur-xl ${getScoreBgGlow(metrics.score)}`}>
           {/* Header do Item */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 pr-8 sm:pr-0">
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">{categoryInfo.icon}</span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    {input.name}
-                  </h2>
-                  {input.link && (
-                    <a
-                      href={input.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-zinc-400 hover:text-[#ffbb00]"
-                      title="Link do produto"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 pb-4 pr-8 sm:pr-0">
+            <div className="flex items-start gap-3">
+              {/* Botão de Emoji */}
+              <button
+                type="button"
+                onClick={() => onOpenEmojiPicker && onOpenEmojiPicker(item)}
+                className="group relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-700 text-3xl transition-transform hover:scale-110 hover:border-[#ffbb00] tap-effect"
+                title="Mudar emoji do item"
+              >
+                <span>{displayIcon}</span>
+                <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-950 border border-zinc-700 text-zinc-400">
+                  <Smile className="h-2.5 w-2.5 text-[#ffbb00]" />
                 </div>
-                <div className="text-xs text-zinc-400">
-                  {categoryInfo.label} • Avaliado em {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+              </button>
+
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#ffbb00]">
+                  {categoryInfo.label}
+                </div>
+                <h2 className="text-lg sm:text-xl font-black text-white tracking-tight uppercase">
+                  {input.name}
+                </h2>
+                {input.model && (
+                  <div className="inline-block mt-0.5 rounded-md bg-zinc-800/80 px-2 py-0.5 text-xs font-semibold text-zinc-300 border border-zinc-700/60">
+                    Modelo: <span className="text-white">{input.model}</span>
+                  </div>
+                )}
+                <div className="text-xs text-zinc-400 mt-1">
+                  Registrado em {new Date(item.createdAt).toLocaleDateString('pt-BR')}
                 </div>
               </div>
             </div>
+
             <div className="text-left sm:text-right">
               <div className="text-2xl font-black text-white">
                 {formatBRL(input.price)}
@@ -139,7 +167,7 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
                 <span className="text-3xl font-black tracking-tight text-white">
                   {metrics.score}%
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                   Score
                 </span>
               </div>
@@ -173,7 +201,7 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
                 {formatBRL(metrics.costPerUse)}
               </div>
               <div className="text-[10px] text-zinc-400">
-                ~{metrics.totalEstimatedUses} utilizações previstas
+                ~{metrics.totalEstimatedUses} utilizações em {lifespanFormatted}
               </div>
             </div>
 
@@ -208,6 +236,62 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
             </div>
           </div>
 
+          {/* Dossiê & Links de Pesquisa do Produto */}
+          <div className="mt-6 rounded-2xl border border-zinc-800 bg-black/50 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                <Search className="h-3.5 w-3.5 text-[#ffbb00]" />
+                Dossiê do Produto & Links de Pesquisa
+              </div>
+              <span className="text-[10px] text-zinc-500">Links rápidos</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href={googleShoppingUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-[#ffbb00] hover:text-[#ffbb00] transition-colors"
+              >
+                <span>Google Shopping</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              <a
+                href={mercadoLivreUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-yellow-400 hover:text-yellow-400 transition-colors"
+              >
+                <span>Mercado Livre</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              <a
+                href={amazonUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-amber-400 hover:text-amber-400 transition-colors"
+              >
+                <span>Amazon</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              {input.link && (
+                <a
+                  href={input.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 rounded-lg border border-[#ffbb00]/40 bg-[#ffbb00]/10 px-3 py-1.5 text-xs font-bold text-[#ffbb00] hover:bg-[#ffbb00]/20 transition-colors"
+                >
+                  <Link2 className="h-3 w-3" />
+                  <span>Link Direto Salvo</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+            </div>
+          </div>
+
           {/* Lista de Insights Inteligentes */}
           <div className="mt-6 space-y-2 rounded-xl border border-white/5 bg-black/40 p-4">
             <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -216,7 +300,7 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
             <div className="space-y-1.5 pt-1">
               {metrics.insights.map((insight, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300 leading-relaxed">
-                  <span className="text-[#ffbb00] mt-0.5">•</span>
+                  <span className="text-[#ffbb00] mt-0.5 font-bold">•</span>
                   <span>{insight}</span>
                 </div>
               ))}
@@ -308,4 +392,3 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
     </div>
   );
 };
-

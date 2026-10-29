@@ -67,6 +67,15 @@ export function updateItemStatus(id: string, status: PurchaseStatus): PurchaseIt
   return updated;
 }
 
+export function updateItemIcon(id: string, customIcon: string): PurchaseItem[] {
+  const current = getStoredItems();
+  const updated = current.map((item) =>
+    item.id === id ? { ...item, customIcon } : item
+  );
+  saveStoredItems(updated);
+  return updated;
+}
+
 export function submitItemReview(id: string, review: PurchaseReview): PurchaseItem[] {
   const current = getStoredItems();
   const updated = current.map((item) => {

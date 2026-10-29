@@ -14,6 +14,7 @@ interface ItemListProps {
   onUpdateStatus: (id: string, status: PurchaseStatus) => void;
   onOpenReview: (item: PurchaseItem) => void;
   onViewSummary: (item: PurchaseItem) => void;
+  onOpenEmojiPicker: (item: PurchaseItem) => void;
   onDeleteItem: (id: string) => void;
   onNavigateToWizard: () => void;
 }
@@ -23,6 +24,7 @@ export const ItemList: React.FC<ItemListProps> = ({
   onUpdateStatus,
   onOpenReview,
   onViewSummary,
+  onOpenEmojiPicker,
   onDeleteItem,
   onNavigateToWizard,
 }) => {
@@ -42,6 +44,7 @@ export const ItemList: React.FC<ItemListProps> = ({
     const matchesSearch =
       searchTerm.trim() === '' ||
       item.input.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.input.model && item.input.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
       item.input.notes?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
@@ -93,7 +96,7 @@ export const ItemList: React.FC<ItemListProps> = ({
         </div>
       </div>
 
-      {/* Controles de Busca & Filtros (Scroll horizontal suave no celular) */}
+      {/* Controles de Busca & Filtros */}
       <div className="space-y-3">
         {/* Barra de Busca */}
         <div className="relative">
@@ -102,7 +105,7 @@ export const ItemList: React.FC<ItemListProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por nome do produto..."
+            placeholder="Buscar por produto ou modelo..."
             className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00]"
           />
         </div>
@@ -141,6 +144,7 @@ export const ItemList: React.FC<ItemListProps> = ({
               onUpdateStatus={onUpdateStatus}
               onOpenReview={onOpenReview}
               onViewSummary={onViewSummary}
+              onOpenEmojiPicker={onOpenEmojiPicker}
               onDeleteItem={onDeleteItem}
             />
           ))}

@@ -10,7 +10,8 @@ import {
   Star, 
   ShoppingBag,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Smile
 } from 'lucide-react';
 
 interface ItemCardProps {
@@ -18,6 +19,7 @@ interface ItemCardProps {
   onUpdateStatus: (id: string, status: PurchaseStatus) => void;
   onOpenReview: (item: PurchaseItem) => void;
   onViewSummary: (item: PurchaseItem) => void;
+  onOpenEmojiPicker: (item: PurchaseItem) => void;
   onDeleteItem: (id: string) => void;
 }
 
@@ -26,9 +28,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onUpdateStatus,
   onOpenReview,
   onViewSummary,
+  onOpenEmojiPicker,
   onDeleteItem,
 }) => {
   const categoryInfo = CATEGORY_LABELS[item.input.category] || { label: item.input.category, icon: '📦' };
+  const displayIcon = item.customIcon || item.input.customIcon || categoryInfo.icon;
 
   // Dias em quarentena passados
   const createdDate = new Date(item.createdAt);
@@ -37,20 +41,39 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 sm:p-5 backdrop-blur-md transition-all hover:border-zinc-700">
-      {/* Top row: Category, Name, Price and Score */}
-      <div 
-        onClick={() => onViewSummary(item)}
-        className="flex items-start justify-between gap-3 cursor-pointer group"
-      >
+      {/* Top row: Category, Name, Model, Price and Score */}
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800/80 text-xl group-hover:scale-105 transition-transform">
-            {categoryInfo.icon}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
+          {/* Botão de Emoji Interativo para mudar o ícone */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenEmojiPicker(item);
+            }}
+            className="group relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-zinc-800/80 text-2xl transition-all hover:scale-110 hover:border hover:border-[#ffbb00] tap-effect"
+            title="Clique para alterar o emoji deste item"
+          >
+            <span>{displayIcon}</span>
+            <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 opacity-70 group-hover:opacity-100">
+              <Smile className="h-2.5 w-2.5 text-[#ffbb00]" />
+            </div>
+          </button>
+
+          {/* Nome e Modelo */}
+          <div 
+            onClick={() => onViewSummary(item)}
+            className="cursor-pointer group flex-1"
+          >
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug group-hover:text-[#ffbb00] transition-colors">
                 {item.input.name}
               </h3>
+              {item.input.model && (
+                <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[11px] font-medium text-zinc-300 border border-zinc-700">
+                  {item.input.model}
+                </span>
+              )}
               {item.input.link && (
                 <a
                   href={item.input.link}
@@ -73,7 +96,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </div>
 
         {/* Score & Preço */}
-        <div className="text-right shrink-0">
+        <div 
+          onClick={() => onViewSummary(item)}
+          className="text-right shrink-0 cursor-pointer"
+        >
           <div className="text-base font-extrabold text-white">
             {formatBRL(item.input.price)}
           </div>
@@ -162,7 +188,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             className="flex items-center gap-1 rounded-lg border border-[#ffbb00]/30 bg-[#ffbb00]/10 px-2.5 py-1.5 text-xs font-bold text-[#ffbb00] hover:bg-[#ffbb00]/20 tap-effect"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Ver Análise</span>
+            <span>Ver Dossiê</span>
           </button>
 
           {item.status === 'quarantine' && (
