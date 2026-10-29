@@ -69,8 +69,9 @@ export interface PurchaseEvaluationInput {
   model?: string; // Modelo específico
   category: PurchaseCategory;
   price: number;
-  notes?: string;
-  link?: string;
+  reason?: string; // Motivo da Compra
+  link?: string; // Link direto para o produto
+  notes?: string; // Observações extras
   customIcon?: string;
 
   // Eixo Utilidade

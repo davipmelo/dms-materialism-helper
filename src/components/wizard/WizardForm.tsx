@@ -16,9 +16,8 @@ import {
   Sparkles, 
   Check, 
   DollarSign, 
-  Search, 
-  ExternalLink, 
-  Link2 
+  Link2,
+  FileText
 } from 'lucide-react';
 
 interface WizardFormProps {
@@ -30,6 +29,7 @@ const INITIAL_FORM: PurchaseEvaluationInput = {
   model: '',
   category: 'tech',
   price: 0,
+  reason: '',
   notes: '',
   link: '',
   frequency: 'daily',
@@ -112,12 +112,6 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
   const categories = Object.entries(CATEGORY_LABELS) as [PurchaseCategory, { label: string; icon: string }][];
 
-  // Query para busca de produto
-  const searchQuery = [formData.name, formData.model].filter(Boolean).join(' ');
-  const googleShoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(searchQuery)}`;
-  const mercadoLivreUrl = `https://lista.mercadolivre.com.br/${encodeURIComponent(searchQuery)}`;
-  const amazonUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(searchQuery)}`;
-
   return (
     <div className="w-full max-w-xl mx-auto pb-16">
       {/* Indicador de Passos Mobile-Friendly */}
@@ -125,7 +119,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         <div className="flex items-center justify-between text-xs font-bold text-zinc-400 mb-2 px-1">
           <span>Passo {step} de 4</span>
           <span className="text-[#ffbb00]">
-            {step === 1 && 'Produto & Modelo'}
+            {step === 1 && 'Produto & Motivo'}
             {step === 2 && 'Frequência & Vida Útil'}
             {step === 3 && 'Gatilho & Impulso'}
             {step === 4 && 'Financeiro & Revenda'}
@@ -148,11 +142,11 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 O que você quer comprar?
               </h2>
               <p className="text-xs sm:text-sm text-zinc-400">
-                Especifique o produto e o modelo exato para montar o dossiê da compra.
+                Preencha os dados do item e a razão pela qual você quer fazer essa compra.
               </p>
             </div>
 
-            {/* Grid Produto e Modelo */}
+            {/* Grid Produto e Modelo (Campos de Texto Puros) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Campo Produto */}
               <div className="space-y-1.5">
@@ -183,51 +177,6 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 />
               </div>
             </div>
-
-            {/* Card de Pesquisa Automática na Internet (Se tiver digitado o nome) */}
-            {searchQuery.trim().length > 2 && (
-              <div className="rounded-2xl border border-[#ffbb00]/25 bg-zinc-900/60 p-3.5 space-y-2.5 animate-fade-in">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#ffbb00] uppercase tracking-wider">
-                    <Search className="h-3.5 w-3.5" />
-                    Pesquisar "{searchQuery}"
-                  </div>
-                  <span className="text-[10px] text-zinc-400">Ver preços e specs</span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <a
-                    href={googleShoppingUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-[#ffbb00] hover:text-[#ffbb00] transition-colors"
-                  >
-                    <span>Google Shopping</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-
-                  <a
-                    href={mercadoLivreUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-yellow-400 hover:text-yellow-400 transition-colors"
-                  >
-                    <span>Mercado Livre</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-
-                  <a
-                    href={amazonUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 hover:border-amber-400 hover:text-amber-400 transition-colors"
-                  >
-                    <span>Amazon</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-            )}
 
             {/* Preço (R$) */}
             <div className="space-y-1.5">
@@ -277,7 +226,22 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
               </div>
             </div>
 
-            {/* Link direto do produto */}
+            {/* Motivo da Compra (Campo Separado) */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5 text-[#ffbb00]" />
+                Motivo da Compra
+              </label>
+              <textarea
+                rows={2}
+                value={formData.reason || ''}
+                onChange={(e) => updateField('reason', e.target.value)}
+                placeholder="Explique brevemente por que você quer comprar isso (ex: meu fone quebrou e preciso de isolamento para trabalhar)..."
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00] leading-relaxed"
+              />
+            </div>
+
+            {/* Link direto do produto (Campo Separado) */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
                 <Link2 className="h-3.5 w-3.5 text-zinc-400" />
@@ -290,6 +254,9 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                 placeholder="https://..."
                 className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-[#ffbb00] focus:outline-none focus:ring-1 focus:ring-[#ffbb00]"
               />
+              <span className="text-[10px] text-zinc-500 block">
+                Se você colar o link direto aqui, criaremos um card de acesso rápido no dossiê do item.
+              </span>
             </div>
           </div>
         )}

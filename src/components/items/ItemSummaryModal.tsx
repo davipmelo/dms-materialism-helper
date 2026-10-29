@@ -13,11 +13,9 @@ import {
   Ban, 
   CheckCircle2, 
   Star, 
-  ExternalLink,
-  Search,
-  Link2,
   Smile
 } from 'lucide-react';
+import { DossierSheet } from './DossierSheet';
 import confetti from 'canvas-confetti';
 
 interface ItemSummaryModalProps {
@@ -67,12 +65,6 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
     if (score >= 40) return 'from-orange-500/20 to-transparent border-orange-500/30';
     return 'from-rose-500/20 to-transparent border-rose-500/30';
   };
-
-  // Links de busca de produto para o dossiê
-  const searchQuery = [input.name, input.model].filter(Boolean).join(' ');
-  const googleShoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(searchQuery)}`;
-  const mercadoLivreUrl = `https://lista.mercadolivre.com.br/${encodeURIComponent(searchQuery)}`;
-  const amazonUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(searchQuery)}`;
 
   // Formatação de anos e meses
   const years = Math.floor(input.lifespanMonths / 12);
@@ -236,62 +228,6 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
             </div>
           </div>
 
-          {/* Dossiê & Links de Pesquisa do Produto */}
-          <div className="mt-6 rounded-2xl border border-zinc-800 bg-black/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
-                <Search className="h-3.5 w-3.5 text-[#ffbb00]" />
-                Dossiê do Produto & Links de Pesquisa
-              </div>
-              <span className="text-[10px] text-zinc-500">Links rápidos</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <a
-                href={googleShoppingUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-[#ffbb00] hover:text-[#ffbb00] transition-colors"
-              >
-                <span>Google Shopping</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-
-              <a
-                href={mercadoLivreUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-yellow-400 hover:text-yellow-400 transition-colors"
-              >
-                <span>Mercado Livre</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-
-              <a
-                href={amazonUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-amber-400 hover:text-amber-400 transition-colors"
-              >
-                <span>Amazon</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-
-              {input.link && (
-                <a
-                  href={input.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-1.5 rounded-lg border border-[#ffbb00]/40 bg-[#ffbb00]/10 px-3 py-1.5 text-xs font-bold text-[#ffbb00] hover:bg-[#ffbb00]/20 transition-colors"
-                >
-                  <Link2 className="h-3 w-3" />
-                  <span>Link Direto Salvo</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
-            </div>
-          </div>
-
           {/* Lista de Insights Inteligentes */}
           <div className="mt-6 space-y-2 rounded-xl border border-white/5 bg-black/40 p-4">
             <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -307,6 +243,9 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Dossiê Completo: Motivo, Link da Loja (se colado) e Ficha de Respostas */}
+        <DossierSheet input={input} metrics={metrics} />
 
         {/* Informações de Review (se já tiver sido avaliado) */}
         {item.review && (

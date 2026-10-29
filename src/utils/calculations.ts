@@ -38,6 +38,49 @@ export const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = 
   other: { label: 'Outros', icon: '📦' },
 };
 
+export const DURABILITY_LABELS: Record<string, string> = {
+  fragile: 'Frágil / Perecível (desgaste rápido)',
+  standard: 'Padrão de Mercado',
+  durable: 'Robusto / Bem Feito',
+  buy_it_for_life: 'Buy It For Life (BIFL)',
+};
+
+export const DESIRE_AGE_LABELS: Record<string, string> = {
+  minutes: 'Menos de 24 horas (< 1 dia)',
+  days: 'Alguns dias (< 1 semana)',
+  weeks: '2 a 4 semanas',
+  months: 'Mais de 2 meses',
+};
+
+export const TRIGGER_LABELS: Record<string, string> = {
+  real_pain: 'Dor real sentida no dia a dia',
+  replacement: 'Substituição de item quebrado',
+  friend: 'Vi um amigo/conhecido usando',
+  deal: 'Promoção imperdível / Cupom de desconto',
+  social_media: 'Anúncio ou feed em rede social',
+  boredom: 'Tédio ou busca por dopamina',
+};
+
+export const ALTERNATIVE_LABELS: Record<string, string> = {
+  none: 'Não tenho nada parecido',
+  can_borrow: 'Posso pegar emprestado com alguém',
+  free_solution: 'Existe alternativa grátis / improviso',
+  have_similar: 'Já tenho algo 80% similar',
+};
+
+export const LIQUIDITY_LABELS: Record<string, string> = {
+  high: 'Alta liquidez (vende fácil por ~70%+)',
+  medium: 'Média liquidez (~50% do valor)',
+  low: 'Baixa liquidez (difícil achar comprador)',
+  none: 'Nenhuma (Passivo puro / perda de 100%)',
+};
+
+export const PREFER_CASH_LABELS: Record<string, string> = {
+  item: 'Compraria o item (Desejo genuíno)',
+  tie: 'Dúvida cruel / Indeciso',
+  cash: 'Ficaria com o dinheiro na mão (Alerta de impulso)',
+};
+
 export const DEFAULT_USER_PROFILE: UserProfile = {
   monthlyIncome: 0,
   workingHoursMonth: 160,
