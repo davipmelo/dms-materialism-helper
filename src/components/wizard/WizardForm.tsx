@@ -46,6 +46,7 @@ const INITIAL_FORM: PurchaseEvaluationInput = {
 
 export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
   const [step, setStep] = useState<number>(1);
+  const [stepEnteredAt, setStepEnteredAt] = useState<number>(Date.now());
   const [formData, setFormData] = useState<PurchaseEvaluationInput>(INITIAL_FORM);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
@@ -92,26 +93,55 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
     return true;
   };
 
-  const handleNext = () => {
-    if (!validateStep(step)) return;
+  const goToStep = (targetStep: number) => {
+    if (targetStep === step) return;
+    // Se estiver tentando avançar além do passo 1 sem preencher produto/preço
+    if (targetStep > step && !validateStep(1)) return;
     setErrorMsg('');
-    setStep((prev) => Math.min(4, prev + 1));
+    setStep(targetStep);
+    setStepEnteredAt(Date.now());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
-    setErrorMsg('');
-    setStep((prev) => Math.max(1, prev - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (step < 4) {
-      handleNext();
-      return;
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
     if (!validateStep(step)) return;
+    setErrorMsg('');
+    const next = Math.min(4, step + 1);
+    setStep(next);
+    setStepEnteredAt(Date.now());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBack = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setErrorMsg('');
+    const prev = Math.max(1, step - 1);
+    setStep(prev);
+    setStepEnteredAt(Date.now());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleFinalSubmit = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    // Proteção estrita: só pode submeter se estiver exatamente no Passo 4
+    if (step !== 4) return;
+
+    // Bloqueia ghost-clicks / tap-through do mobile se o clique ocorrer logo após renderizar o passo 4
+    if (Date.now() - stepEnteredAt < 450) {
+      return;
+    }
+
+    if (!validateStep(4)) return;
     onSubmit(formData);
   };
 
@@ -119,17 +149,47 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="w-full max-w-xl mx-auto pb-16">
-      {/* Indicador de Passos Mobile-Friendly */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between text-xs font-bold text-zinc-400 mb-2 px-1">
-          <span>Passo {step} de 4</span>
-          <span className="text-[#ffbb00]">
-            {step === 1 && 'Produto & Motivo'}
-            {step === 2 && 'Frequência & Vida Útil'}
-            {step === 3 && 'Gatilho & Impulso'}
-            {step === 4 && 'Financeiro & Liquidez'}
-          </span>
+      {/* Indicador de Passos Interativo & Mobile-Friendly */}
+      <div className="mb-6 space-y-2">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+          {[
+            { num: 1, title: 'Produto' },
+            { num: 2, title: 'Uso & Vida' },
+            { num: 3, title: 'Impulso' },
+            { num: 4, title: 'Financeiro' },
+          ].map((s) => {
+            const isActive = step === s.num;
+            const isCompleted = step > s.num;
+            return (
+              <button
+                key={`stepper-tab-${s.num}`}
+                type="button"
+                onClick={() => goToStep(s.num)}
+                disabled={s.num > 1 && !formData.name.trim()}
+                className={`py-2 px-1 rounded-xl text-center border transition-all flex flex-col items-center justify-center ${
+                  isActive
+                    ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-[#ffbb00] shadow-sm shadow-[#ffbb00]/20'
+                    : isCompleted
+                    ? 'border-zinc-700 bg-zinc-900/90 text-zinc-300 hover:border-zinc-500'
+                    : 'border-zinc-800/80 bg-zinc-950/60 text-zinc-600 opacity-60'
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <span className={`text-[10px] font-black ${isActive ? 'text-[#ffbb00]' : isCompleted ? 'text-zinc-300' : 'text-zinc-500'}`}>
+                    {isCompleted ? '✓' : `0${s.num}`}
+                  </span>
+                  <span className="hidden sm:inline text-[11px] font-bold">
+                    {s.title}
+                  </span>
+                </div>
+                <span className="sm:hidden text-[9px] font-semibold truncate max-w-full">
+                  {s.title}
+                </span>
+              </button>
+            );
+          })}
         </div>
+
         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
           <div
             className="h-full bg-[#ffbb00] transition-all duration-300 ease-out"
@@ -138,7 +198,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-6">
         {/* ===================== PASSO 1: PRODUTO & MODELO ===================== */}
         {step === 1 && (
           <div className="space-y-5 animate-fade-in">
@@ -587,8 +647,11 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
         {/* ===================== PASSO 4: FINANCEIRO & LIQUIDEZ ===================== */}
         {step === 4 && (
-          <div className="space-y-6 animate-fade-in">
+          <div key="step-4-container" className="space-y-6 animate-fade-in">
             <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffbb00]/15 border border-[#ffbb00]/30 text-[11px] font-black text-[#ffbb00] uppercase tracking-wider mb-1">
+                <span>Passo Final 4 de 4</span>
+              </div>
               <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase flex items-center gap-2">
                 <Wallet className="h-6 w-6 text-[#ffbb00]" />
                 <span>Financeiro & Liquidez</span>
@@ -627,13 +690,13 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
                   onClick={() => updateField('paidWithSavings', false)}
                   className={`flex flex-col p-3.5 rounded-xl border text-left transition-all tap-effect ${
                     !formData.paidWithSavings
-                      ? 'border-amber-500 bg-amber-500/15 text-white ring-1 ring-amber-500'
+                      ? 'border-[#ffbb00] bg-[#ffbb00]/15 text-white ring-1 ring-[#ffbb00]'
                       : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-zinc-200">Salário / Parcelado</span>
-                    {!formData.paidWithSavings && <Check className="h-4 w-4 text-amber-400" />}
+                    {!formData.paidWithSavings && <Check className="h-4 w-4 text-[#ffbb00]" />}
                   </div>
                   <span className="text-[11px] text-zinc-400 mt-1">
                     Vai comprometer o orçamento do mês ou o limite do cartão
@@ -686,13 +749,14 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
           </div>
         )}
 
-        {/* Botões de Ação de Navegação */}
-        <div className="flex items-center gap-3 pt-2">
+        {/* Botões de Ação de Navegação com keys separadas e proteção anti tap-through */}
+        <div className="flex items-center gap-3 pt-3">
           {step > 1 && (
             <button
+              key={`btn-back-step-${step}`}
               type="button"
               onClick={handleBack}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-bold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all tap-effect"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 text-xs font-bold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all tap-effect"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Voltar</span>
@@ -701,24 +765,27 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
           {step < 4 ? (
             <button
+              key={`btn-next-step-${step}`}
               type="button"
               onClick={handleNext}
               className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#ffbb00] py-3.5 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all shadow-lg shadow-[#ffbb00]/20 tap-effect"
             >
-              <span>Continuar</span>
+              <span>Continuar para Passo {step + 1}</span>
               <ArrowRight className="h-4 w-4" />
             </button>
           ) : (
             <button
-              type="submit"
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#ffbb00] py-3.5 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all shadow-lg shadow-[#ffbb00]/25 tap-effect"
+              key="btn-finish-calculate-step-4"
+              type="button"
+              onClick={handleFinalSubmit}
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ffbb00] to-amber-400 py-4 text-xs sm:text-sm font-black uppercase text-black hover:brightness-110 transition-all shadow-xl shadow-[#ffbb00]/25 tap-effect"
             >
-              <Sparkles className="h-4 w-4" />
-              <span>Calcular Veredito & Insights</span>
+              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span>Calcular Veredito & Ver Dossiê</span>
             </button>
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };
