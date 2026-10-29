@@ -13,7 +13,8 @@ import {
   Ban, 
   CheckCircle2, 
   Star, 
-  Smile
+  Smile,
+  Pencil
 } from 'lucide-react';
 import { DossierSheet } from './DossierSheet';
 import confetti from 'canvas-confetti';
@@ -25,6 +26,7 @@ interface ItemSummaryModalProps {
   onUpdateStatus: (id: string, status: PurchaseStatus) => void;
   onOpenReview: (item: PurchaseItem) => void;
   onOpenEmojiPicker?: (item: PurchaseItem) => void;
+  onEditItem?: (item: PurchaseItem) => void;
 }
 
 export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
@@ -34,6 +36,7 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
   onUpdateStatus,
   onOpenReview,
   onOpenEmojiPicker,
+  onEditItem,
 }) => {
   if (!isOpen || !item) return null;
 
@@ -77,14 +80,31 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-950 p-6 sm:p-8 shadow-2xl space-y-6">
-        {/* Botão de Fechar no Topo */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 rounded-full border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors z-10"
-          title="Fechar"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {/* Botão de Fechar e Botão de Editar no Topo */}
+        <div className="absolute top-5 right-5 flex items-center gap-2 z-10">
+          {onEditItem && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onEditItem(item);
+              }}
+              className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-xs font-bold text-[#ffbb00] hover:bg-zinc-800 hover:border-[#ffbb00]/50 transition-all tap-effect"
+              title="Editar respostas deste formulário"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Editar</span>
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            className="rounded-full border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors"
+            title="Fechar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
 
         {/* Card Principal de Veredito */}
         <div className={`relative overflow-hidden rounded-3xl border bg-gradient-to-b p-5 sm:p-7 backdrop-blur-xl ${getScoreBgGlow(metrics.score)}`}>
@@ -263,8 +283,33 @@ export const ItemSummaryModal: React.FC<ItemSummaryModalProps> = ({
           </div>
         )}
 
-        {/* Ações para o Item */}
-        <div className="space-y-3 pt-2 border-t border-zinc-800">
+        {/* Ações para o Item: Editar respostas & Alterar status */}
+        <div className="space-y-4 pt-3 border-t border-zinc-800">
+          {onEditItem && (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-zinc-900/80 border border-zinc-800">
+              <div>
+                <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <Pencil className="h-3.5 w-3.5 text-[#ffbb00]" />
+                  <span>Algo mudou sobre essa compra?</span>
+                </div>
+                <div className="text-[11px] text-zinc-400 mt-0.5">
+                  Reabra o questionário preenchido para alterar respostas e recalcular o veredito.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onEditItem(item);
+                }}
+                className="flex items-center gap-1.5 rounded-xl border border-[#ffbb00]/50 bg-[#ffbb00] px-3.5 py-2 text-xs font-black uppercase text-black hover:bg-[#e5a800] transition-all tap-effect shadow-md shadow-[#ffbb00]/15 shrink-0"
+              >
+                <Pencil className="h-3.5 w-3.5 stroke-[2.5]" />
+                <span>Editar Respostas</span>
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">
               Alterar status:

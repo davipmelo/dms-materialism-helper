@@ -67,6 +67,19 @@ export function updateItemStatus(id: string, status: PurchaseStatus): PurchaseIt
   return updated;
 }
 
+export function updateItemInput(
+  id: string,
+  input: PurchaseItem['input'],
+  metrics: PurchaseItem['metrics']
+): PurchaseItem[] {
+  const current = getStoredItems();
+  const updated = current.map((item) =>
+    item.id === id ? { ...item, input, metrics } : item
+  );
+  saveStoredItems(updated);
+  return updated;
+}
+
 export function updateItemIcon(id: string, customIcon: string): PurchaseItem[] {
   const current = getStoredItems();
   const updated = current.map((item) =>

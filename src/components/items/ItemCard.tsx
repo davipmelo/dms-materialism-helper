@@ -11,7 +11,8 @@ import {
   ShoppingBag,
   RotateCcw,
   Sparkles,
-  Smile
+  Smile,
+  Pencil
 } from 'lucide-react';
 
 interface ItemCardProps {
@@ -20,6 +21,7 @@ interface ItemCardProps {
   onOpenReview: (item: PurchaseItem) => void;
   onViewSummary: (item: PurchaseItem) => void;
   onOpenEmojiPicker: (item: PurchaseItem) => void;
+  onEditItem?: (item: PurchaseItem) => void;
   onDeleteItem: (id: string) => void;
 }
 
@@ -29,6 +31,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onOpenReview,
   onViewSummary,
   onOpenEmojiPicker,
+  onEditItem,
   onDeleteItem,
 }) => {
   const categoryInfo = CATEGORY_LABELS[item.input.category] || { label: item.input.category, icon: '📦' };
@@ -190,6 +193,18 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             <Sparkles className="h-3.5 w-3.5" />
             <span>Ver Dossiê</span>
           </button>
+
+          {/* Botão de editar respostas */}
+          {onEditItem && (
+            <button
+              onClick={() => onEditItem(item)}
+              className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 tap-effect"
+              title="Editar respostas do questionário"
+            >
+              <Pencil className="h-3 w-3 text-[#ffbb00]" />
+              <span>Editar</span>
+            </button>
+          )}
 
           {item.status === 'quarantine' && (
             <>

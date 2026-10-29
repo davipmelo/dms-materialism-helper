@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   PurchaseEvaluationInput, 
   PurchaseCategory, 
@@ -18,11 +18,15 @@ import {
   DollarSign, 
   Link2,
   FileText,
-  Wallet
+  Wallet,
+  Pencil
 } from 'lucide-react';
 
 interface WizardFormProps {
   onSubmit: (data: PurchaseEvaluationInput) => void;
+  initialData?: PurchaseEvaluationInput | null;
+  isEditing?: boolean;
+  onCancelEdit?: () => void;
 }
 
 const INITIAL_FORM: PurchaseEvaluationInput = {
@@ -44,15 +48,39 @@ const INITIAL_FORM: PurchaseEvaluationInput = {
   preferCashOverItem: 'item',
 };
 
-export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
+export const WizardForm: React.FC<WizardFormProps> = ({ 
+  onSubmit,
+  initialData,
+  isEditing = false,
+  onCancelEdit
+}) => {
   const [step, setStep] = useState<number>(1);
   const [stepEnteredAt, setStepEnteredAt] = useState<number>(Date.now());
-  const [formData, setFormData] = useState<PurchaseEvaluationInput>(INITIAL_FORM);
+  const [formData, setFormData] = useState<PurchaseEvaluationInput>(initialData || INITIAL_FORM);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   // Estados locais para anos e meses
-  const [lifespanYears, setLifespanYears] = useState<number>(Math.floor(INITIAL_FORM.lifespanMonths / 12));
-  const [lifespanExtraMonths, setLifespanExtraMonths] = useState<number>(INITIAL_FORM.lifespanMonths % 12);
+  const [lifespanYears, setLifespanYears] = useState<number>(
+    Math.floor((initialData?.lifespanMonths ?? INITIAL_FORM.lifespanMonths) / 12)
+  );
+  const [lifespanExtraMonths, setLifespanExtraMonths] = useState<number>(
+    (initialData?.lifespanMonths ?? INITIAL_FORM.lifespanMonths) % 12
+  );
+
+  // Sincronizar quando initialData for fornecido ou alterado
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+      setLifespanYears(Math.floor((initialData.lifespanMonths || 24) / 12));
+      setLifespanExtraMonths((initialData.lifespanMonths || 24) % 12);
+    } else {
+      setFormData(INITIAL_FORM);
+      setLifespanYears(Math.floor(INITIAL_FORM.lifespanMonths / 12));
+      setLifespanExtraMonths(INITIAL_FORM.lifespanMonths % 12);
+    }
+    setStep(1);
+    setStepEnteredAt(Date.now());
+  }, [initialData]);
 
   const updateField = <K extends keyof PurchaseEvaluationInput>(
     field: K,
@@ -149,6 +177,34 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="w-full max-w-xl mx-auto pb-16">
+      {/* Banner Informativo de Modo de Edição */}
+      {isEditing && (
+        <div className="mb-5 flex items-center justify-between rounded-2xl border border-[#ffbb00]/30 bg-[#ffbb00]/10 p-3.5 sm:p-4 backdrop-blur-sm animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#ffbb00]/20 text-[#ffbb00] border border-[#ffbb00]/30">
+              <Pencil className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-wider text-[#ffbb00]">
+                Modo de Edição
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-white">
+                Alterando respostas de: <span className="text-[#ffbb00]">{formData.name || 'Item'}</span>
+              </div>
+            </div>
+          </div>
+          {onCancelEdit && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              className="rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-1.5 text-xs font-bold text-zinc-300 hover:text-white hover:border-zinc-700 transition-all tap-effect shrink-0 ml-2"
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Indicador de Passos Interativo & Mobile-Friendly */}
       <div className="mb-6 space-y-2">
         <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
@@ -781,7 +837,7 @@ export const WizardForm: React.FC<WizardFormProps> = ({ onSubmit }) => {
               className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ffbb00] to-amber-400 py-4 text-xs sm:text-sm font-black uppercase text-black hover:brightness-110 transition-all shadow-xl shadow-[#ffbb00]/25 tap-effect"
             >
               <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>Calcular Veredito & Ver Dossiê</span>
+              <span>{isEditing ? 'Salvar Alterações & Recalcular' : 'Calcular Veredito & Ver Dossiê'}</span>
             </button>
           )}
         </div>

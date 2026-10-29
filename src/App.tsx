@@ -15,6 +15,7 @@ import {
   addItem, 
   updateItemStatus, 
   updateItemIcon,
+  updateItemInput,
   submitItemReview, 
   deleteItem, 
   exportBackupJSON, 
@@ -41,6 +42,7 @@ export function App() {
   // Estado do Wizard atual
   const [activeInput, setActiveInput] = useState<PurchaseEvaluationInput | null>(null);
   const [activeMetrics, setActiveMetrics] = useState<CalculatedMetrics | null>(null);
+  const [editingItem, setEditingItem] = useState<PurchaseItem | null>(null);
 
   // Modais
   const [viewingSummaryItem, setViewingSummaryItem] = useState<PurchaseItem | null>(null);
@@ -56,11 +58,45 @@ export function App() {
     setProfile(loadedProfile);
   }, []);
 
-  // Handler de cálculo do formulário
+  // Iniciar edição de item existente
+  const handleStartEditItem = (item: PurchaseItem) => {
+    setViewingSummaryItem(null);
+    setActiveInput(null);
+    setActiveMetrics(null);
+    setEditingItem(item);
+    setCurrentTab('wizard');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setCurrentTab('items');
+  };
+
+  // Handler de cálculo / submissão do formulário
   const handleFormSubmit = (data: PurchaseEvaluationInput) => {
     const metrics = calculateMetrics(data, profile);
-    setActiveInput(data);
-    setActiveMetrics(metrics);
+
+    if (editingItem) {
+      // Atualizar o item existente no armazenamento e no estado
+      const updated = updateItemInput(editingItem.id, data, metrics);
+      setItems(updated);
+
+      const updatedItem: PurchaseItem = {
+        ...editingItem,
+        input: data,
+        metrics,
+      };
+
+      setEditingItem(null);
+      setActiveInput(null);
+      setActiveMetrics(null);
+      setCurrentTab('items');
+      // Reabre o Dossiê para mostrar o veredito atualizado
+      setViewingSummaryItem(updatedItem);
+    } else {
+      setActiveInput(data);
+      setActiveMetrics(metrics);
+    }
   };
 
   // Salvar novo item
@@ -150,6 +186,11 @@ export function App() {
       <Navbar
         currentTab={currentTab}
         onSelectTab={(tab) => {
+          if (tab === 'wizard' && currentTab !== 'wizard') {
+            setEditingItem(null);
+            setActiveInput(null);
+            setActiveMetrics(null);
+          }
           setCurrentTab(tab);
         }}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -173,10 +214,16 @@ export function App() {
                 onReset={() => {
                   setActiveInput(null);
                   setActiveMetrics(null);
+                  setEditingItem(null);
                 }}
               />
             ) : (
-              <WizardForm onSubmit={handleFormSubmit} />
+              <WizardForm 
+                onSubmit={handleFormSubmit}
+                initialData={editingItem ? editingItem.input : null}
+                isEditing={!!editingItem}
+                onCancelEdit={handleCancelEdit}
+              />
             )}
           </>
         )}
@@ -188,10 +235,12 @@ export function App() {
             onOpenReview={(item) => setReviewingItem(item)}
             onViewSummary={(item) => setViewingSummaryItem(item)}
             onOpenEmojiPicker={(item) => setChangingEmojiItem(item)}
+            onEditItem={handleStartEditItem}
             onDeleteItem={handleDeleteItem}
             onNavigateToWizard={() => {
               setActiveInput(null);
               setActiveMetrics(null);
+              setEditingItem(null);
               setCurrentTab('wizard');
             }}
           />
@@ -203,6 +252,7 @@ export function App() {
             onNavigateToWizard={() => {
               setActiveInput(null);
               setActiveMetrics(null);
+              setEditingItem(null);
               setCurrentTab('wizard');
             }}
           />
@@ -217,6 +267,7 @@ export function App() {
         onUpdateStatus={handleUpdateStatus}
         onOpenReview={(item) => setReviewingItem(item)}
         onOpenEmojiPicker={(item) => setChangingEmojiItem(item)}
+        onEditItem={handleStartEditItem}
       />
 
       {/* Emoji Picker Modal */}
@@ -260,7 +311,14 @@ export function App() {
       {/* Mobile Bottom Navigation */}
       <BottomNav
         currentTab={currentTab}
-        onSelectTab={setCurrentTab}
+        onSelectTab={(tab) => {
+          if (tab === 'wizard' && currentTab !== 'wizard') {
+            setEditingItem(null);
+            setActiveInput(null);
+            setActiveMetrics(null);
+          }
+          setCurrentTab(tab);
+        }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         quarantineCount={quarantineCount}
       />

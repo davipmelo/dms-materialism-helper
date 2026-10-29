@@ -15,6 +15,7 @@ interface ItemListProps {
   onOpenReview: (item: PurchaseItem) => void;
   onViewSummary: (item: PurchaseItem) => void;
   onOpenEmojiPicker: (item: PurchaseItem) => void;
+  onEditItem?: (item: PurchaseItem) => void;
   onDeleteItem: (id: string) => void;
   onNavigateToWizard: () => void;
 }
@@ -25,6 +26,7 @@ export const ItemList: React.FC<ItemListProps> = ({
   onOpenReview,
   onViewSummary,
   onOpenEmojiPicker,
+  onEditItem,
   onDeleteItem,
   onNavigateToWizard,
 }) => {
@@ -145,6 +147,7 @@ export const ItemList: React.FC<ItemListProps> = ({
               onOpenReview={onOpenReview}
               onViewSummary={onViewSummary}
               onOpenEmojiPicker={onOpenEmojiPicker}
+              onEditItem={onEditItem}
               onDeleteItem={onDeleteItem}
             />
           ))}
